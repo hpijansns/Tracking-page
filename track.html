@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Logistics - Live Parcel Tracking</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #f3f4f6; color: #1f2937; padding: 15px; display: flex; justify-content: center; }
+        .track-container { width: 100%; max-width: 520px; }
+        
+        /* Search Box */
+        .search-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .search-row { display: flex; gap: 8px; margin-top: 10px; }
+        .search-input { flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 600; text-transform: uppercase; }
+        .search-btn { background: #0b5ed7; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        /* Main Result Card */
+        .result-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: none; }
+        .header { background: #0f172a; color: white; padding: 20px; }
+        .badge { display: inline-block; background: #22c55e; color: white; font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; letter-spacing: 0.5px; animation: pulse 2s infinite; }
+        
+        /* Stepper Progress */
+        .progress-bar-container { display: flex; justify-content: space-between; position: relative; margin: 25px 0 10px 0; }
+        .progress-line { position: absolute; top: 12px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
+        .progress-line-fill { position: absolute; top: 12px; left: 10%; height: 3px; background: #0b5ed7; z-index: 1; transition: width 0.5s ease; }
+        .step { position: relative; z-index: 2; text-align: center; width: 25%; font-size: 11px; font-weight: 600; color: #94a3b8; }
+        .step-circle { width: 26px; height: 26px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 12px; }
+        .step.active .step-circle { background: #0b5ed7; color: white; }
+        .step.active { color: #0b5ed7; }
+
+        /* Timeline History */
+        .timeline-section { padding: 20px; }
+        .timeline-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: #334155; }
+        .timeline-item { display: flex; gap: 16px; margin-bottom: 20px; position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: 7px; top: 18px; bottom: -18px; width: 2px; background: #e2e8f0; }
+        .timeline-item:last-child::before { display: none; }
+        .timeline-dot { width: 16px; height: 16px; border-radius: 50%; background: #94a3b8; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; margin-top: 2px; }
+        .timeline-item.active .timeline-dot { background: #0b5ed7; box-shadow: 0 0 0 2px #93c5fd; }
+        .timeline-info { flex: 1; font-size: 13px; }
+        .timeline-time { color: #64748b; font-size: 11px; margin-bottom: 2px; }
+        .timeline-loc { font-weight: 700; color: #1e293b; }
+        .timeline-desc { color: #475569; margin-top: 2px; }
+
+        .delivery-guy-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 15px; display: flex; align-items: center; gap: 12px; }
+        .delivery-guy-card img { width: 45px; height: 45px; border-radius: 50%; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+<div class="track-container">
+    <!-- Search Bar -->
+    <div class="search-card">
+        <h3 style="font-size: 16px; color: #0b5ed7;">📦 Express Courier Tracking</h3>
+        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Enter your AWB / Tracking number to trace order</p>
+        <div class="search-row">
+            <input type="text" id="trackInput" class="search-input" placeholder="e.g. EXP-894102">
+            <button class="search-btn" onclick="searchOrder()">Track</button>
+        </div>
+    </div>
+
+    <!-- Live Details Card -->
+    <div class="result-card" id="resultCard">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge" id="statusBadge">IN TRANSIT</span>
+                <span style="font-size: 12px; opacity: 0.8;" id="trackNumberText">EXP-000000</span>
+            </div>
+            <h2 style="font-size: 18px; margin-top: 8px;" id="productName">Product Name</h2>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Deliver to: <b id="recipientName">User</b> (<span id="destinationCity">City</span>)</div>
+        </div>
+
+        <!-- 4-Step Progress Bar -->
+        <div style="padding: 15px 15px 0 15px;">
+            <div class="progress-bar-container">
+                <div class="progress-line"></div>
+                <div class="progress-line-fill" id="progressFill" style="width: 25%;"></div>
+                
+                <div class="step" id="step1">
+                    <div class="step-circle">1</div>
+                    <div>Booked</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-circle">2</div>
+                    <div>In Transit</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-circle">3</div>
+                    <div>Local Hub</div>
+                </div>
+                <div class="step" id="step4">
+                    <div class="step-circle">4</div>
+                    <div>Delivery</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="timeline-section">
+            <div class="timeline-title">Shipment Journey</div>
+            <div id="timelineList">
+                <!-- Dynamically injected via JavaScript -->
+            </div>
+
+            <!-- Delivery Rider Box (Only visible on Day 3/Day 4) -->
+            <div class="delivery-guy-card" id="riderCard" style="display: none;">
+                <img src="https://i.pravatar.cc/150?img=68" alt="Rider">
+                <div>
+                    <div style="font-weight: bold; font-size: 13px;">Manoj Kumar (Delivery Partner)</div>
+                    <div style="font-size: 11px; color: #64748b;">Assigned to deliver by 07:00 PM • ⭐ 4.9</div>
+                    <div style="font-size: 11px; color: #0b5ed7; font-weight: bold; margin-top: 2px;">Share OTP 4892 upon arrival</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // पेज लोड होते ही चेक करें कि क्या URL में डेटा है
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('d');
+        const queryCode = urlParams.get('code');
+
+        if(encodedData) {
+            try {
+                const data = JSON.parse(decodeURIComponent(encodedData));
+                document.getElementById('trackInput').value = data.trk;
+                renderTracking(data);
+            } catch(e) { console.error(e); }
+        } else if(queryCode) {
+            document.getElementById('trackInput').value = queryCode;
+            searchOrder();
+        }
+    };
+
+    function searchOrder() {
+        const code = document.getElementById('trackInput').value.trim();
+        if(!code) return alert("कृपया ट्रैकिंग कोड डालें!");
+
+        const localData = localStorage.getItem("TRK_" + code);
+        if(localData) {
+            renderTracking(JSON.parse(localData));
+        } else {
+            alert("यह ट्रैकिंग कोड नहीं मिला! कृपया सही कोड जांचें।");
+        }
+    }
+
+    function renderTracking(order) {
+        document.getElementById('resultCard').style.display = 'block';
+        document.getElementById('trackNumberText').innerText = order.trk;
+        document.getElementById('productName').innerText = order.prod;
+        document.getElementById('recipientName').innerText = order.recv;
+        document.getElementById('destinationCity').innerText = order.city;
+
+        // कितने दिन बीत चुके हैं कैलकुलेट करें
+        const dispatchDate = new Date(order.date);
+        const today = new Date();
+        
+        // Days difference
+        const d1 = new Date(dispatchDate.getFullYear(), dispatchDate.getMonth(), dispatchDate.getDate());
+        const d2 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const diffDays = Math.max(0, Math.floor((d2 - d1) / (1000 * 60 * 60 * 24)));
+
+        updateTimeline(diffDays, order);
+    }
+
+    function updateTimeline(days, order) {
+        const timelineList = document.getElementById('timelineList');
+        timelineList.innerHTML = "";
+
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+        const progressFill = document.getElementById('progressFill');
+        const badge = document.getElementById('statusBadge');
+        const riderCard = document.getElementById('riderCard');
+
+        // Reset
+        [step1, step2, step3, step4].forEach(s => s.classList.remove('active'));
+        riderCard.style.display = 'none';
+
+        let events = [];
+
+        // Day 0: Dispatch
+        events.push({
+            active: days === 0,
+            time: formatDate(order.date, 0) + " • 04:30 PM",
+            loc: "Central Logistics Hub (Warehouse)",
+            desc: "Order picked up and manifest generated. Dispatched towards linehaul hub."
+        });
+
+        // Day 1: In Transit
+        if (days >= 1) {
+            events.unshift({
+                active: days === 1,
+                time: formatDate(order.date, 1) + " • 02:15 AM",
+                loc: "National Transshipment Hub",
+                desc: "Processed through sorting facility. In transit to destination state."
+            });
+        }
+
+        // Day 2: Reached City Hub
+        if (days >= 2) {
+            events.unshift({
+                active: days === 2,
+                time: formatDate(order.date, 2) + " • 08:45 AM",
+                loc: `${order.city} Delivery Hub`,
+                desc: "Shipment bag received & verified at destination facility. Scheduled for final delivery."
+            });
+        }
+
+        // Day 3+: Out for Delivery
+        if (days >= 3) {
+            events.unshift({
+                active: true,
+                time: formatDate(order.date, 3) + " • 09:30 AM",
+                loc: `${order.city}`,
+                desc: "Out for delivery. Courier partner is heading to the delivery address."
+            });
+            riderCard.style.display = 'flex';
+        }
+
+        // Stepper और Progress Fill अपडेट करें
+        if (days === 0) {
+            step1.classList.add('active');
+            progressFill.style.width = '10%';
+            badge.innerText = 'DISPATCHED';
+        } else if (days === 1) {
+            step1.classList.add('active');
+            step2.classList.add('active');
+            progressFill.style.width = '40%';
+            badge.innerText = 'IN TRANSIT';
+        } else if (days === 2) {
+            step1.classList.add('active');
+            step2.classList.add('active');
+            step3.classList.add('active');
+            progressFill.style.width = '70%';
+            badge.innerText = 'AT LOCAL HUB';
+        } else {
+            step1.classList.add('active');
+            step2.classList.add('active');
+            step3.classList.add('active');
+            step4.classList.add('active');
+            progressFill.style.width = '100%';
+            badge.innerText = 'OUT FOR DELIVERY';
+        }
+
+        // HTML में इवेंट्स जोड़ें
+        events.forEach(ev => {
+            timelineList.innerHTML += `
+                <div class="timeline-item ${ev.active ? 'active' : ''}">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-info">
+                        <div class="timeline-time">${ev.time}</div>
+                        <div class="timeline-loc">${ev.loc}</div>
+                        <div class="timeline-desc">${ev.desc}</div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function formatDate(baseDateStr, addDays) {
+        const d = new Date(baseDateStr);
+        d.setDate(d.getDate() + addDays);
+        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
+</script>
+
+</body>
+</html>
