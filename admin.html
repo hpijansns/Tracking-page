@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier Admin Panel - Create Tracking</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .admin-card { background: white; width: 100%; max-width: 500px; padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #0b5ed7; margin-bottom: 20px; font-size: 22px; display: flex; align-items: center; gap: 8px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; outline: none; }
+        input:focus, select:focus { border-color: #0b5ed7; ring: 2px solid #0b5ed7; }
+        .btn-row { display: flex; gap: 8px; }
+        .btn { background: #0b5ed7; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn:hover { background: #094cb3; }
+        .btn-gen { background: #e5e7eb; color: #374151; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; white-space: nowrap; font-weight: 600; }
+        
+        .result-box { display: none; margin-top: 24px; background: #f8fafc; border: 1px dashed #0b5ed7; padding: 16px; border-radius: 8px; }
+        .code-display { font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 1px; margin: 8px 0; }
+        .share-btn { background: #10b981; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <h2>⚡ Logistics Admin Panel</h2>
+    
+    <div class="form-group">
+        <label>Tracking Number (कूरियर कोड)</label>
+        <div class="btn-row">
+            <input type="text" id="trkCode" placeholder="उदा. EXP-982341">
+            <button class="btn-gen" onclick="generateCode()">Auto Generate</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Product Name (सामान का नाम)</label>
+        <input type="text" id="prodName" placeholder="उदा. Apple iPhone 15 Pro Max 256GB">
+    </div>
+
+    <div class="form-group">
+        <label>Receiver's Name (दोस्त का नाम)</label>
+        <input type="text" id="recvName" placeholder="उदा. Rahul Sharma">
+    </div>
+
+    <div class="form-group">
+        <label>Destination City (डिलीवरी शहर)</label>
+        <input type="text" id="destCity" placeholder="उदा. Jaipur, Rajasthan">
+    </div>
+
+    <div class="form-group">
+        <label>Dispatch Date (कब रवाना हुआ)</label>
+        <input type="date" id="dispatchDate">
+        <small style="color: #6b7280; font-size: 11px;">* अगर आज से 2 दिन पहले की डेट चुनेंगे, तो तुरंत 'Day 2' का स्टेटस दिखेगा।</small>
+    </div>
+
+    <button class="btn" onclick="saveShipment()">Create Shipment 🚀</button>
+
+    <div class="result-box" id="resultBox">
+        <div style="font-size: 12px; color: #6b7280;">Shipment Created Successfully!</div>
+        <div class="code-display" id="resCode">EXP-000000</div>
+        <button class="share-btn" onclick="copyTrackingLink()">📋 Copy Direct Tracking Link</button>
+    </div>
+</div>
+
+<script>
+    // आज की तारीख डिफ़ॉल्ट सेट करें
+    document.getElementById('dispatchDate').value = new Date().toISOString().split('T')[0];
+
+    function generateCode() {
+        const randomNum = Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('trkCode').value = 'EXP-' + randomNum;
+    }
+
+    let generatedLink = "";
+
+    function saveShipment() {
+        const trk = document.getElementById('trkCode').value.trim();
+        const prod = document.getElementById('prodName').value.trim();
+        const recv = document.getElementById('recvName').value.trim();
+        const city = document.getElementById('destCity').value.trim();
+        const date = document.getElementById('dispatchDate').value;
+
+        if(!trk || !prod || !recv || !city || !date) {
+            alert("कृपया सभी फ़ील्ड्स भरें!");
+            return;
+        }
+
+        const shipmentData = { trk, prod, recv, city, date };
+
+        // 1. LocalStorage में सेव (ताकि उसी ब्राउज़र पर कोड डालने पर काम करे)
+        localStorage.setItem("TRK_" + trk, JSON.stringify(shipmentData));
+
+        // 2. Direct Link तैयार करें (ताकि दोस्त को WhatsApp पर लिंक भेजें तो बिना डेटाबेस के भी चले)
+        const encoded = encodeURIComponent(JSON.stringify(shipmentData));
+        const currentUrl = window.location.href;
+        const trackUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/track.html?d=' + encoded;
+        generatedLink = trackUrl;
+
+        document.getElementById('resCode').innerText = trk;
+        document.getElementById('resultBox').style.display = 'block';
+    }
+
+    function copyTrackingLink() {
+        navigator.clipboard.writeText(generatedLink);
+        alert("ट्रैकिंग लिंक कॉपी हो गया! अब इसे दोस्त को WhatsApp या चैट पर भेजें।");
+    }
+</script>
+
+</body>
+</html>
