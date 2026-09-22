@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consignment Road Route Tracking - Saraswati Book Publication</title>
+    <title>Live Roadway Route Tracking - Saraswati Book Publication</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -25,6 +25,10 @@
         .search-row { display: flex; gap: 8px; margin-top: 6px; }
         .search-input { flex: 1; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; text-transform: uppercase; font-weight: bold; }
         .search-btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+        /* Live Sync Indicator */
+        .live-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #16a34a; margin-bottom: 8px; }
+        .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
 
         /* Tracking Main Card */
         .track-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); display: none; }
@@ -72,6 +76,8 @@
         .t-time { font-size: 11px; color: var(--muted); }
         .t-loc { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
         .t-desc { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
@@ -81,11 +87,11 @@
         <div class="logo-icon">📖</div>
         <div>
             <div class="logo-text">Saraswati Book Publication</div>
-            <div style="font-size: 10px; color: var(--muted); font-weight: 600;">Road Consignment Tracking</div>
+            <div style="font-size: 10px; color: var(--muted); font-weight: 600;">Realtime Highway Logistics</div>
         </div>
     </div>
-    <!-- 10 Indian Languages Switcher -->
-    <select id="langSelect" class="lang-select" onchange="changeLanguage()">
+    <!-- 10 Languages Switcher -->
+    <select id="langSelect" class="lang-select">
         <option value="en" selected>English</option>
         <option value="hi">हिन्दी (Hindi)</option>
         <option value="mr">मराठी (Marathi)</option>
@@ -102,10 +108,11 @@
 <div class="container">
     <!-- Search Bar -->
     <div class="search-card">
+        <div class="live-status"><div class="dot"></div> Firebase Cloud Live Sync Active</div>
         <div style="font-size: 11px; font-weight: 800; color: #64748b;" data-i18n="search_title">TRACK CONSIGNMENT ROADWAY ROUTE</div>
         <div class="search-row">
             <input type="text" id="trackInput" class="search-input" placeholder="e.g. SBP-HW-849102">
-            <button class="search-btn" onclick="fetchShipment()" data-i18n="btn_track">Track</button>
+            <button class="search-btn" id="btnSearch" data-i18n="btn_track">Track</button>
         </div>
     </div>
 
@@ -122,7 +129,7 @@
             </div>
         </div>
 
-        <!-- Complete Verified Address Container -->
+        <!-- Verified Destination Address Box -->
         <div class="address-box">
             <div class="address-title" data-i18n="deliv_address_title">DELIVERY DESTINATION ADDRESS</div>
             <div class="address-val" id="dispFullAddress">
@@ -149,7 +156,7 @@
             </div>
         </div>
 
-        <!-- Real Route Map -->
+        <!-- Real Highway Map -->
         <div id="map"></div>
 
         <!-- Stepper -->
@@ -171,7 +178,7 @@
             <span data-i18n="notice_body">Use blue ballpoint pen only. Maintain neat handwriting on the blank register provided. Do not fold or tear any pages of the assignment.</span>
         </div>
 
-        <!-- Timeline -->
+        <!-- Timeline Log -->
         <div class="timeline">
             <div class="timeline-title" data-i18n="audit_head">Consignment Movement Audit Log</div>
             <div id="timelineList"></div>
@@ -181,8 +188,28 @@
 
 <!-- Leaflet Map JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    // Multi-Language Dictionary
+
+<!-- Firebase Realtime Database Listener Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQysDZkvCf5m7TZrqck7zxb1EiTpRhFuk",
+      authDomain: "remotescreen-4dc1a.firebaseapp.com",
+      databaseURL: "https://remotescreen-4dc1a-default-rtdb.firebaseio.com",
+      projectId: "remotescreen-4dc1a",
+      storageBucket: "remotescreen-4dc1a.firebasestorage.app",
+      messagingSenderId: "673121898826",
+      appId: "1:673121898826:web:af3f82f486638b61af71b3",
+      measurementId: "G-XN2P1X0LZ7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 10 Language Translations
     const translations = {
         en: {
             search_title: "TRACK CONSIGNMENT ROADWAY ROUTE",
@@ -248,108 +275,18 @@
             out_for_deliv: "ડિલિવરી માટે નીકળેલ છે",
             in_transit: "માર્ગમાં (નેશનલ હાઈવે)"
         },
-        ta: {
-            search_title: "பார்சல் சாலை வழியைக் கண்காணிக்கவும்",
-            btn_track: "ட்ராக்",
-            cand_lbl: "விண்ணப்பதாரர்:",
-            deliv_address_title: "டெலிவரி முகவரி",
-            phone_lbl: "தொடர்பு எண்:",
-            origin_hub_lbl: "தோற்ற மையம்",
-            payout_lbl: "சரிபார்ப்பிற்குப் பின் ஊதியம்",
-            kit_content_lbl: "தொகுப்பில் உள்ள பொருட்கள்",
-            st1: "புறப்பட்டது", st2: "போக்குவரத்து மையம்", st3: "நகர வரிசையாக்கம்", st4: "டெலிவரி",
-            notice_head: "கையெழுத்து வழிகாட்டுதல்கள்:",
-            notice_body: "நீல நிற பால்பாயிண்ட் பேனாவை மட்டுமே பயன்படுத்தவும். பக்கங்களை மடக்கவோ கிழிக்கவோ வேண்டாம்.",
-            audit_head: "பார்சல் பயண பதிவு",
-            out_for_deliv: "டெலிவரிக்கு வந்துள்ளது",
-            in_transit: "வழியில் உள்ளது"
-        },
-        te: {
-            search_title: "రవాణా మార్గాన్ని ట్రాక్ చేయండి",
-            btn_track: "ట్రాక్ చేయండి",
-            cand_lbl: "అభ్యర్థి:",
-            deliv_address_title: "డెలివరీ చిరునామా",
-            phone_lbl: "ఫోన్ నంబర్:",
-            origin_hub_lbl: "ప్రారంభ కేంద్రం",
-            payout_lbl: "ధృవీకరణ తర్వాత వేతనం",
-            kit_content_lbl: "కిట్‌లోని వస్తువులు",
-            st1: "బయలుదేరింది", st2: "రవాణా కేంద్రం", st3: "నగర విభజన", st4: "డెలివరీ",
-            notice_head: "రాత ప్రతి సూచనలు:",
-            notice_body: "నీలిరంగు బాల్ పాయింట్ పెన్ను మాత్రమే ఉపయోగించండి. పేజీలను మడతపెట్టడం లేదా చింపడం చేయవద్దు.",
-            audit_head: "పార్శిల్ ప్రయాణ వివరాలు",
-            out_for_deliv: "డెలివరీ కోసం బయలుదేరింది",
-            in_transit: "మార్గంలో ఉంది"
-        },
-        kn: {
-            search_title: "ಸಾರಿಗೆ ಮಾರ್ಗವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",
-            btn_track: "ಟ್ರ್ಯಾಕ್",
-            cand_lbl: "ಅಭ್ಯರ್ಥಿ:",
-            deliv_address_title: "ತಲುಪಿಸುವ ವಿಳಾಸ",
-            phone_lbl: "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:",
-            origin_hub_lbl: "ಪ್ರಾರಂಭಿಕ ಹಬ್",
-            payout_lbl: "ಪರಿಶೀಲನೆಯ ನಂತರ ಸಂಭಾವನೆ",
-            kit_content_lbl: "ಕಿಟ್ ಒಳಗೊಂಡಿರುವ ಸಾಮಗ್ರಿಗಳು",
-            st1: "ರವಾನಿಸಲಾಗಿದೆ", st2: "ಸಾರಿಗೆ ಕೇಂದ್ರ", st3: "ನಗರ ವಿಂಗಡಣೆ", st4: "ವಿತರಣೆ",
-            notice_head: "ಕೈಬರಹದ ನಿಯಮಗಳು:",
-            notice_body: "ನೀಲಿ ಬಾಲ್‌ಪಾಯಿಂಟ್ ಪೆನ್ ಮಾತ್ರ ಬಳಸಿ. ಒದಗಿಸಿದ ರಿಜಿಸ್ಟರ್‌ನಲ್ಲಿ ಸ್ವಚ್ಛವಾಗಿ ಬರೆಯಿರಿ. ಪುಟಗಳನ್ನು ಹರಿಯಬೇಡಿ.",
-            audit_head: "ಪಾರ್ಸೆಲ್ ಚಲನೆಯ ವಿವರಣೆ",
-            out_for_deliv: "ವಿತರಣೆಗೆ ಹೊರಟಿದೆ",
-            in_transit: "ಮಾರ್ಗ ಮಧ್ಯದಲ್ಲಿದೆ"
-        },
-        ml: {
-            search_title: "പാഴ്സൽ റോഡ് റൂട്ട് ട്രാക്ക് ചെയ്യുക",
-            btn_track: "ട്രാക്ക് ചെയ്യുക",
-            cand_lbl: "ഉദ്യോഗാർത്ഥി:",
-            deliv_address_title: "ഡെലിവറി വിലാസം",
-            phone_lbl: "ബന്ധപ്പെടേണ്ട നമ്പർ:",
-            origin_hub_lbl: "പുറപ്പെട്ട കേന്ദ്രം",
-            payout_lbl: "പരിശോധനയ്ക്ക് ശേഷമുള്ള പ്രതിഫലം",
-            kit_content_lbl: "പാക്കേജിലുള്ള സാധനങ്ങൾ",
-            st1: "പുറപ്പെട്ടു", st2: "ട്രാൻസിറ്റ് ഹബ്ബ്", st3: "നഗര സോർട്ടിംഗ്", st4: "ഡെലിവറി",
-            notice_head: "കൈയെഴുത്തു നിർദ്ദേശങ്ങൾ:",
-            notice_body: "നീല ബോൾപോയിന്റ് പേന മാത്രം ഉപയോഗിക്കുക. പേജുകൾ മടക്കുകയോ കീറുകയോ ചെയ്യരുത്.",
-            audit_head: "പാഴ്സൽ മൂവ്മെന്റ് രേഖ",
-            out_for_deliv: "ഡെലിവറിക്കായി പുറപ്പെട്ടു",
-            in_transit: "വഴിയിലാണ്"
-        },
-        bn: {
-            search_title: "পার্সেল রোড রুট ট্র্যাক করুন",
-            btn_track: "ট্র্যাক করুন",
-            cand_lbl: "প্রার্থী:",
-            deliv_address_title: "ডেলিভারি ঠিকানা",
-            phone_lbl: "যোগাযোগ নম্বর:",
-            origin_hub_lbl: "উৎস কেন্দ্র",
-            payout_lbl: "যাচাইকরণের পরে পারিশ্রমিক",
-            kit_content_lbl: "কিটে অন্তর্ভুক্ত সামগ্রী",
-            st1: "রওনা হয়েছে", st2: "ট্রানজিট হাব", st3: "শহর বাছাই", st4: "ডেলিভারি",
-            notice_head: "হাতের লেখার নির্দেশাবলী:",
-            notice_body: "শুধুমাত্র নীল বলপেন ব্যবহার করুন। প্রদত্ত রেজিস্ট্রারে পরিষ্কারভাবে লিখুন। কোনো পাতা ছিঁড়বেন না।",
-            audit_head: "পার্সেল ট্র্যাকিং বিবরণ",
-            out_for_deliv: "ডেলিভারির জন্য বেরিয়েছে",
-            in_transit: "ট্রানজিটে রয়েছে"
-        },
-        pa: {
-            search_title: "ਪਾਰਸਲ ਰੋਡ ਰੂਟ ਟਰੈਕ ਕਰੋ",
-            btn_track: "ਟਰੈਕ ਕਰੋ",
-            cand_lbl: "ਉਮੀਦਵਾਰ:",
-            deliv_address_title: "ਡਿਲੀਵਰੀ ਦਾ ਪੂਰਾ ਪਤਾ",
-            phone_lbl: "ਸੰਪਰਕ ਨੰਬਰ:",
-            origin_hub_lbl: "ਮੂਲ ਡਿਸਪੈਚ ਹੱਬ",
-            payout_lbl: "ਜਾਂਚ ਤੋਂ ਬਾਅਦ ਮਿਹਨਤਾਨਾ",
-            kit_content_lbl: "ਕਿੱਟ ਵਿੱਚ ਸ਼ਾਮਲ ਸਮੱਗਰੀ",
-            st1: "ਰਵਾਨਾ ਹੋਇਆ", st2: "ਟ੍ਰਾਂਜ਼ਿਟ ਹੱਬ", st3: "ਸ਼ਹਿਰ ਛਾਂਟੀ", st4: "ਡਿਲੀਵਰੀ",
-            notice_head: "ਹੱਥ ਲਿਖਤ ਹਦਾਇਤਾਂ:",
-            notice_body: "ਸਿਰਫ਼ ਨੀਲੇ ਬਾਲ ਪੈੱਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਦਿੱਤੇ ਰਜਿਸਟਰ ਵਿੱਚ ਸਾਫ਼ ਲਿਖੋ। ਕੋਈ ਵੀ ਪੰਨਾ ਨਾ ਪਾੜੋ।",
-            audit_head: "ਪਾਰਸਲ ਆਵਾਜਾਈ ਲੌਗ",
-            out_for_deliv: "ਡਿਲੀਵਰੀ ਲਈ ਨਿਕਲਿਆ",
-            in_transit: "ਰਸਤੇ ਵਿੱਚ (ਹਾਈਵੇਅ)"
-        }
+        ta: { search_title: "பார்சல் சாலை வழியைக் கண்காணிக்கவும்", btn_track: "ட்ராக்", cand_lbl: "விண்ணப்பதாரர்:", deliv_address_title: "டெலிவரி முகவரி", phone_lbl: "தொடர்பு எண்:", origin_hub_lbl: "தோற்ற மையம்", payout_lbl: "சரிபார்ப்பிற்குப் பின் ஊதியம்", kit_content_lbl: "தொகுப்பில் உள்ள பொருட்கள்", st1: "புறப்பட்டது", st2: "போக்குவரத்து மையம்", st3: "நகர வரிசையாக்கம்", st4: "டெலிவரி", notice_head: "கையெழுத்து வழிகாட்டுதல்கள்:", notice_body: "நீல நிற பால்பாயிண்ட் பேனாவை மட்டுமே பயன்படுத்தவும்.", audit_head: "பார்சல் பயண பதிவு", out_for_deliv: "டெலிவரிக்கு வந்துள்ளது", in_transit: "வழியில் உள்ளது" },
+        te: { search_title: "రవాణా మార్గాన్ని ట్రాక్ చేయండి", btn_track: "ట్రాక్ చేయండి", cand_lbl: "అభ్యర్థి:", deliv_address_title: "డెలివరీ చిరునామా", phone_lbl: "ఫోన్ నంబర్:", origin_hub_lbl: "ప్రారంభ కేంద్రం", payout_lbl: "ధృవీకరణ తర్వాత వేతనం", kit_content_lbl: "కిట్‌లోని వస్తువులు", st1: "బయలుదేరింది", st2: "రవాణా కేంద్రం", st3: "నగర విభజన", st4: "డెలివరీ", notice_head: "రాత ప్రతి సూచనలు:", notice_body: "నీలిరంగు బాల్ పాయింట్ పెన్ను మాత్రమే ఉపయోగించండి.", audit_head: "పార్శిల్ ప్రయాణ వివరాలు", out_for_deliv: "డెలివరీ కోసం బయలుదేరింది", in_transit: "మార్గంలో ఉంది" },
+        kn: { search_title: "ಸಾರಿಗೆ ಮಾರ್ಗವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ", btn_track: "ಟ್ರ್ಯಾಕ್", cand_lbl: "ಅಭ್ಯರ್ಥಿ:", deliv_address_title: "ತಲುಪಿಸುವ ವಿಳಾಸ", phone_lbl: "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:", origin_hub_lbl: "ಪ್ರಾರಂಭಿಕ ಹಬ್", payout_lbl: "ಪರಿಶೀಲನೆಯ ನಂತರ ಸಂಭಾವನೆ", kit_content_lbl: "ಕಿಟ್ ಒಳಗೊಂಡಿರುವ ಸಾಮಗ್ರಿಗಳು", st1: "ರವಾನಿಸಲಾಗಿದೆ", st2: "ಸಾರಿಗೆ ಕೇಂದ್ರ", st3: "ನಗರ ವಿಂಗಡಣೆ", st4: "ವಿತರಣೆ", notice_head: "ಕೈಬರಹದ ನಿಯಮಗಳು:", notice_body: "ನೀಲಿ ಬಾಲ್‌ಪಾಯಿಂಟ್ ಪೆನ್ ಮಾತ್ರ ಬಳಸಿ.", audit_head: "ಪಾರ್ಸೆಲ್ ಚಲನೆಯ ವಿವರಣೆ", out_for_deliv: "ವಿತರಣೆಗೆ ಹೊರಟಿದೆ", in_transit: "ಮಾರ್ಗ ಮಧ್ಯದಲ್ಲಿದೆ" },
+        ml: { search_title: "പാഴ്സൽ റോഡ് റൂട്ട് ട്രാക്ക് ചെയ്യുക", btn_track: "ട്രാക്ക് ചെയ്യുക", cand_lbl: "ഉദ്യോഗാർത്ഥി:", deliv_address_title: "ഡെലിവറി വിലാസം", phone_lbl: "ബന്ധപ്പെടേണ്ട നമ്പർ:", origin_hub_lbl: "പുറപ്പെട്ട കേന്ദ്രം", payout_lbl: "പ്രതിഫലം", kit_content_lbl: "പാക്കേജിലുള്ള സാധനങ്ങൾ", st1: "പുറപ്പെട്ടു", st2: "ട്രാൻസിറ്റ്", st3: "സോർട്ടിംഗ്", st4: "ഡെലിവറി", notice_head: "നിർദ്ദേശങ്ങൾ:", notice_body: "നീല ബോൾപോയിന്റ് പേന മാത്രം ഉപയോഗിക്കുക.", audit_head: "യാത്രാ രേഖ", out_for_deliv: "ഡെലിവറിക്കായി പുറപ്പെട്ടു", in_transit: "വഴിയിലാണ്" },
+        bn: { search_title: "পার্সেল রোড রুট ট্র্যাক করুন", btn_track: "ট্র্যাক করুন", cand_lbl: "প্রার্থী:", deliv_address_title: "ডেলিভারি ঠিকানা", phone_lbl: "যোগাযোগ নম্বর:", origin_hub_lbl: "উৎস কেন্দ্র", payout_lbl: "পারিশ্রমিক", kit_content_lbl: "কিটের সামগ্রী", st1: "রওনা হয়েছে", st2: "ট্রানজিট", st3: "বাছাই", st4: "ডেলিভারি", notice_head: "হাতের লেখার নির্দেশাবলী:", notice_body: "শুধুমাত্র নীল বলপেন ব্যবহার করুন।", audit_head: "ট্র্যাকিং বিবরণ", out_for_deliv: "ডেলিভারির জন্য বেরিয়েছে", in_transit: "ট্রানজিটে রয়েছে" },
+        pa: { search_title: "ਪਾਰਸਲ ਰੋਡ ਰੂਟ ਟਰੈਕ ਕਰੋ", btn_track: "ਟਰੈਕ ਕਰੋ", cand_lbl: "ਉਮੀਦਵਾਰ:", deliv_address_title: "ਡਿਲੀਵਰੀ ਪਤਾ", phone_lbl: "ਸੰਪਰਕ ਨੰਬਰ:", origin_hub_lbl: "ਮੂਲ ਹੱਬ", payout_lbl: "ਮਿਹਨਤਾਨਾ", kit_content_lbl: "ਕਿੱਟ ਸਮੱਗਰੀ", st1: "ਰਵਾਨਾ", st2: "ਟ੍ਰਾਂਜ਼ਿਟ", st3: "ਛਾਂਟੀ", st4: "ਡਿਲੀਵਰੀ", notice_head: "ਹਦਾਇਤਾਂ:", notice_body: "ਸਿਰਫ਼ ਨੀਲੇ ਬਾਲ ਪੈੱਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।", audit_head: "ਟਰੈਕਿੰਗ ਲੌਗ", out_for_deliv: "ਡਿਲੀਵਰੀ ਲਈ ਨਿਕਲਿਆ", in_transit: "ਰਸਤੇ ਵਿੱਚ" }
     };
 
     let activeData = null;
     let mapInstance = null;
 
-    function changeLanguage() {
+    function applyLanguage() {
         const lang = document.getElementById('langSelect').value;
         const dict = translations[lang] || translations.en;
 
@@ -363,10 +300,14 @@
             badge.innerText = activeData.step === 4 ? dict.out_for_deliv : (activeData.step === 2 ? dict.in_transit : "ACTIVE");
         }
     }
+    document.getElementById('langSelect').addEventListener('change', applyLanguage);
 
-    window.onload = function() {
-        const params = new URLSearchParams(window.location.search);
-        const pkg = params.get('pkg');
-        const code = params.get('code');
-
-        
+    // Listen in Realtime from Firebase
+    function listenToOrder(code) {
+        const orderRef = ref(db, 'shipments/' + code);
+        onValue(orderRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                renderShipment(data);
+            } else {
+                alert("यह ट्रैकिंग कोड Firebase डेटाबे
