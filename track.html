@@ -3,338 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consignment Tracking - Saraswati Book Publication</title>
-    <!-- Leaflet Map CSS -->
+    <title>Consignment Road Route Tracking - Saraswati Book Publication</title>
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --primary: #0f172a; --brand: #1e3a8a; --accent: #2563eb; --green: #15803d; --text: #1e293b; --muted: #64748b; }
+        :root { --primary: #0f2b5c; --accent: #2563eb; --green: #15803d; --text: #1e293b; --muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #f8fafc; color: var(--text); padding-bottom: 60px; }
+        body { background: #f1f5f9; color: var(--text); padding-bottom: 50px; }
 
-        /* Publication Top Header */
-        .portal-header { background: white; border-bottom: 2px solid #e2e8f0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-logo { width: 36px; height: 36px; background: var(--brand); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; }
-        .brand-title { font-size: 16px; font-weight: 800; color: var(--brand); line-height: 1.1; }
-        .brand-sub { font-size: 11px; color: var(--muted); font-weight: 600; }
-        .security-badge { font-size: 11px; color: var(--green); font-weight: 700; background: #dcfce7; padding: 4px 10px; border-radius: 20px; }
+        /* Top Nav & Language Switcher */
+        .header-bar { background: white; border-bottom: 2px solid #e2e8f0; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo-wrap { display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 34px; height: 34px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .logo-text { font-size: 15px; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        .lang-select { padding: 6px 10px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-size: 13px; font-weight: bold; color: var(--primary); background: #f8fafc; outline: none; cursor: pointer; }
 
-        .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
+        .container { max-width: 620px; margin: 16px auto; padding: 0 14px; }
 
-        /* Search Bar */
-        .search-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; }
-        .search-row { display: flex; gap: 8px; margin-top: 8px; }
-        .search-input { flex: 1; padding: 11px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; text-transform: uppercase; }
-        .search-btn { background: var(--brand); color: white; border: none; padding: 11px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        /* Search Card */
+        .search-card { background: white; padding: 14px 16px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 15px; }
+        .search-row { display: flex; gap: 8px; margin-top: 6px; }
+        .search-input { flex: 1; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; text-transform: uppercase; font-weight: bold; }
+        .search-btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        /* Main Tracking Card */
-        .main-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); display: none; }
-        .card-header { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); color: white; padding: 22px; }
-        .badge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        /* Tracking Main Card */
+        .track-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); display: none; }
+        .card-head { background: linear-gradient(135deg, #0f2b5c 0%, #1e1b4b 100%); color: white; padding: 20px; }
+        .pill-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .pill { background: #22c55e; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; }
-        .consignment-no { font-size: 12px; opacity: 0.85; font-family: monospace; letter-spacing: 1px; }
-        .project-title { font-size: 17px; font-weight: 800; margin-top: 4px; line-height: 1.3; }
-        
-        /* Assignment Details Grid */
-        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
-        .meta-grid div span { color: var(--muted); display: block; margin-bottom: 2px; }
-        .meta-grid div b { color: var(--text); font-size: 13px; }
+        .awb-text { font-size: 12px; opacity: 0.85; font-family: monospace; }
+        .pkg-title { font-size: 17px; font-weight: 800; margin-top: 4px; }
 
-        /* Material Included Banner */
-        .kit-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 18px; margin: 15px 20px; border-radius: 0 8px 8px 0; font-size: 13px; }
-        .kit-box b { color: var(--brand); display: block; margin-bottom: 2px; }
+        /* Full Customer Address Box */
+        .address-box { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 15px 20px; font-size: 13px; }
+        .address-title { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .address-val { font-weight: 600; color: #1e293b; line-height: 1.4; }
 
-        /* Leaflet Map */
-        #map { height: 210px; width: 100%; border-bottom: 1px solid #e2e8f0; }
+        /* Meta Grid */
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; background: white; }
+        .meta-item span { color: var(--muted); display: block; margin-bottom: 2px; }
+        .meta-item b { font-size: 13px; color: var(--text); }
 
-        /* Stepper */
-        .stepper-wrap { padding: 20px 20px 10px 20px; }
+        /* Map */
+        #map { height: 260px; width: 100%; border-bottom: 1px solid #e2e8f0; }
+
+        /* Progress Stepper */
+        .stepper-box { padding: 18px 20px 10px 20px; background: white; }
         .stepper { display: flex; justify-content: space-between; position: relative; }
         .step-line { position: absolute; top: 13px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
-        .step-line-fill { position: absolute; top: 13px; left: 10%; height: 3px; background: var(--brand); z-index: 1; transition: width 0.4s; }
-        .step { position: relative; z-index: 2; text-align: center; width: 25%; font-size: 11px; font-weight: 600; color: #94a3b8; }
-        .step-dot { width: 28px; height: 28px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 12px; font-weight: 800; }
-        .step.done .step-dot { background: var(--brand); color: white; }
-        .step.done { color: var(--brand); }
+        .step-line-fill { position: absolute; top: 13px; left: 10%; height: 3px; background: var(--primary); z-index: 1; transition: width 0.4s; }
+        .step { position: relative; z-index: 2; text-align: center; width: 25%; font-size: 11px; font-weight: 700; color: #94a3b8; }
+        .step-dot { width: 28px; height: 28px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px auto; font-size: 12px; }
+        .step.done .step-dot { background: var(--primary); color: white; }
+        .step.done { color: var(--primary); }
 
-        /* Guidelines Notice */
-        .notice-card { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 14px; margin: 15px 20px; font-size: 12px; color: #92400e; }
-        .notice-card b { display: block; font-size: 13px; margin-bottom: 4px; color: #78350f; }
+        /* Instructions */
+        .instruction-box { background: #fefce8; border: 1px solid #fef08a; padding: 14px 18px; margin: 15px 20px; border-radius: 8px; font-size: 12px; color: #854d0e; }
+        .instruction-box b { display: block; font-size: 13px; margin-bottom: 3px; color: #713f12; }
 
-        /* Audit Timeline */
-        .timeline { padding: 20px; }
-        .timeline-head { font-size: 13px; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; margin-bottom: 16px; }
-        .t-row { display: flex; gap: 16px; position: relative; margin-bottom: 20px; }
-        .t-row::after { content: ''; position: absolute; left: 8px; top: 20px; bottom: -20px; width: 2px; background: #e2e8f0; }
+        /* Timeline History */
+        .timeline { padding: 18px 20px; }
+        .timeline-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 14px; }
+        .t-row { display: flex; gap: 14px; position: relative; margin-bottom: 18px; }
+        .t-row::after { content: ''; position: absolute; left: 7px; top: 18px; bottom: -18px; width: 2px; background: #e2e8f0; }
         .t-row:last-child::after { display: none; }
-        .t-circle { width: 18px; height: 18px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; flex-shrink: 0; margin-top: 2px; }
-        .t-row.active .t-circle { background: var(--brand); box-shadow: 0 0 0 2px rgba(30,58,138,0.3); }
+        .t-dot { width: 16px; height: 16px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; margin-top: 2px; flex-shrink: 0; }
+        .t-row.active .t-dot { background: var(--primary); box-shadow: 0 0 0 2px rgba(15,43,92,0.3); }
         .t-time { font-size: 11px; color: var(--muted); }
-        .t-place { font-size: 13px; font-weight: 800; color: var(--text); margin-top: 2px; }
-        .t-note { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
+        .t-loc { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+        .t-desc { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-<div class="portal-header">
-    <div class="brand">
-        <div class="brand-logo">📖</div>
+<div class="header-bar">
+    <div class="logo-wrap">
+        <div class="logo-icon">📖</div>
         <div>
-            <div class="brand-title">Saraswati Book Publication</div>
-            <div class="brand-sub">National Educational Assignment Dispatch Portal</div>
+            <div class="logo-text">Saraswati Book Publication</div>
+            <div style="font-size: 10px; color: var(--muted); font-weight: 600;">Road Consignment Tracking</div>
         </div>
     </div>
-    <div class="security-badge">Verified Board</div>
+    <!-- 10 Indian Languages Switcher -->
+    <select id="langSelect" class="lang-select" onchange="changeLanguage()">
+        <option value="en" selected>English</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="mr">मराठी (Marathi)</option>
+        <option value="gu">ગુજરાતી (Gujarati)</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="te">తెలుగు (Telugu)</option>
+        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+        <option value="ml">മലയാളം (Malayalam)</option>
+        <option value="bn">বাংলা (Bengali)</option>
+        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+    </select>
 </div>
 
 <div class="container">
     <!-- Search Bar -->
     <div class="search-card">
-        <div style="font-size: 12px; font-weight: 800; color: #64748b;">DISPATCH CONSIGNMENT STATUS</div>
+        <div style="font-size: 11px; font-weight: 800; color: #64748b;" data-i18n="search_title">TRACK CONSIGNMENT ROADWAY ROUTE</div>
         <div class="search-row">
             <input type="text" id="trackInput" class="search-input" placeholder="e.g. SBP-HW-849102">
-            <button class="search-btn" onclick="fetchShipment()">Track Kit</button>
+            <button class="search-btn" onclick="fetchShipment()" data-i18n="btn_track">Track</button>
         </div>
     </div>
 
-    <!-- Tracking Result Main Card -->
-    <div class="main-card" id="mainCard">
-        <div class="card-header">
-            <div class="badge-row">
-                <span class="pill" id="badgePill">IN TRANSIT</span>
-                <span class="consignment-no" id="codeText">SBP-HW-000000</span>
+    <!-- Main Live Result Card -->
+    <div class="track-card" id="trackCard">
+        <div class="card-head">
+            <div class="pill-row">
+                <span class="pill" id="badgePill">OUT FOR DELIVERY</span>
+                <span class="awb-text" id="dispAwb">SBP-HW-000000</span>
             </div>
-            <div class="project-title" id="dispProject">Project Title Here</div>
-            <div style="font-size: 12px; opacity: 0.9; margin-top: 6px;">
-                Assigned Candidate: <b id="dispCandidate">Rohan Kumar</b> (<span id="dispCandidateId">REG-0000</span>)
+            <div class="pkg-title" id="dispProject">Handwriting Kit Manuscript Project</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">
+                <span data-i18n="cand_lbl">Candidate:</span> <b id="dispCandidate">Rahul Sharma</b> (<span id="dispCandId">REG-0000</span>)
+            </div>
+        </div>
+
+        <!-- Complete Verified Address Container -->
+        <div class="address-box">
+            <div class="address-title" data-i18n="deliv_address_title">DELIVERY DESTINATION ADDRESS</div>
+            <div class="address-val" id="dispFullAddress">
+                Shri Ram Library, Mohan Nagar, Plot No. 56, Near Triveni Nagar, Gopalpura Bypass, Jaipur, Rajasthan 302018
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                <span data-i18n="phone_lbl">Contact:</span> <b id="dispPhone">+91 98290 XXXXX</b>
             </div>
         </div>
 
         <!-- Meta Grid -->
         <div class="meta-grid">
-            <div>
-                <span>Destination Area</span>
-                <b id="dispDest">Patna, Bihar</b>
+            <div class="meta-item">
+                <span data-i18n="origin_hub_lbl">Dispatch Origin Hub</span>
+                <b id="dispOrigin">Ahmedabad Press, Gujarat</b>
             </div>
-            <div>
-                <span>Assigned Workload</span>
-                <b id="dispWork">95 Pages (Ruled)</b>
+            <div class="meta-item">
+                <span data-i18n="payout_lbl">Remuneration upon Verification</span>
+                <b id="dispPayout" style="color: var(--green);">₹8,500</b>
             </div>
-            <div>
-                <span>Remuneration on Completion</span>
-                <b id="dispPay" style="color: var(--green);">₹8,500</b>
-            </div>
-            <div>
-                <span>Return Submission Window</span>
-                <b id="dispDeadline">15 Days Post Delivery</b>
+            <div class="meta-item" style="grid-column: span 2;">
+                <span data-i18n="kit_content_lbl">Package Enclosures</span>
+                <b id="dispKit">1x Master Copy (Printed Reference) + 1x Evaluation Blank Register</b>
             </div>
         </div>
 
-        <!-- Material Included -->
-        <div class="kit-box">
-            <b>📦 Material Included in this Kit:</b>
-            <span id="dispKit">1x Master Copy (Printed Reference) + 1x Blank Evaluation Register + Guideline Slip</span>
-        </div>
-
-        <!-- Leaflet Map -->
+        <!-- Real Route Map -->
         <div id="map"></div>
 
-        <!-- 4-Step Progress Bar -->
-        <div class="stepper-wrap">
+        <!-- Stepper -->
+        <div class="stepper-box">
             <div class="stepper">
                 <div class="step-line"></div>
                 <div class="step-line-fill" id="stepLineFill" style="width: 25%;"></div>
                 
-                <div class="step" id="st1"><div class="step-dot">1</div>Manifested</div>
-                <div class="step" id="st2"><div class="step-dot">2</div>In Transit</div>
-                <div class="step" id="st3"><div class="step-dot">3</div>Local Hub</div>
-                <div class="step" id="st4"><div class="step-dot">4</div>Delivering</div>
+                <div class="step" id="st1"><div class="step-dot">1</div><span data-i18n="st1">Manifested</span></div>
+                <div class="step" id="st2"><div class="step-dot">2</div><span data-i18n="st2">Transit Hub</span></div>
+                <div class="step" id="st3"><div class="step-dot">3</div><span data-i18n="st3">City Sorting</span></div>
+                <div class="step" id="st4"><div class="step-dot">4</div><span data-i18n="st4">Delivery</span></div>
             </div>
         </div>
 
-        <!-- Official Writing Guidelines Notice -->
-        <div class="notice-card">
-            <b>⚠️ Candidate Handwriting Guidelines:</b>
-            1. केवल नीले (Blue) बॉल पेन का उपयोग करें।<br>
-            2. खाली कॉपी (Blank Register) को मोड़ें नहीं और न ही पन्ने फाड़ें।<br>
-            3. कार्य पूरा होने पर इसी पार्सल बॉक्स में पैक करके रिटर्न कोरियर करें।
+        <!-- Official Notice -->
+        <div class="instruction-box">
+            <b data-i18n="notice_head">Candidate Manuscript Instructions:</b>
+            <span data-i18n="notice_body">Use blue ballpoint pen only. Maintain neat handwriting on the blank register provided. Do not fold or tear any pages of the assignment.</span>
         </div>
 
-        <!-- Movement Timeline -->
+        <!-- Timeline -->
         <div class="timeline">
-            <div class="timeline-head">Consignment Movement Audit Trail</div>
-            <div id="timelineContainer"></div>
+            <div class="timeline-title" data-i18n="audit_head">Consignment Movement Audit Log</div>
+            <div id="timelineList"></div>
         </div>
     </div>
 </div>
 
-<!-- Leaflet Map Script -->
+<!-- Leaflet Map JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let map = null;
-
-    const cityCoordinates = {
-        "delhi": [28.7041, 77.1025],
-        "jaipur": [26.9124, 75.7873],
-        "patna": [25.5941, 85.1376],
-        "lucknow": [26.8467, 80.9462],
-        "mumbai": [19.0760, 72.8777],
-        "kolkata": [22.5726, 88.3639],
-        "ahmedabad": [23.0225, 72.5714],
-        "bhopal": [23.2599, 77.4126],
-        "chandigarh": [30.7333, 76.7794]
+    // Multi-Language Dictionary
+    const translations = {
+        en: {
+            search_title: "TRACK CONSIGNMENT ROADWAY ROUTE",
+            btn_track: "Track",
+            cand_lbl: "Candidate:",
+            deliv_address_title: "DELIVERY DESTINATION ADDRESS",
+            phone_lbl: "Contact:",
+            origin_hub_lbl: "Dispatch Origin Hub",
+            payout_lbl: "Remuneration upon Verification",
+            kit_content_lbl: "Package Enclosures",
+            st1: "Manifested", st2: "Transit Hub", st3: "City Sorting", st4: "Delivery",
+            notice_head: "Candidate Manuscript Instructions:",
+            notice_body: "Use blue ballpoint pen only. Maintain neat handwriting on the blank register provided. Do not fold or tear any pages of the assignment.",
+            audit_head: "Consignment Movement Audit Log",
+            out_for_deliv: "OUT FOR DELIVERY",
+            in_transit: "IN TRANSIT (NH HIGHWAY)"
+        },
+        hi: {
+            search_title: "कंसाइनमेंट रोडवे रूट ट्रैक करें",
+            btn_track: "ट्रैक करें",
+            cand_lbl: "कैंडिडेट:",
+            deliv_address_title: "डिलीवरी का पूरा पता",
+            phone_lbl: "संपर्क नंबर:",
+            origin_hub_lbl: "रवाना होने का स्थान (ओरिजिन)",
+            payout_lbl: "सत्यापन उपरांत मानदेय",
+            kit_content_lbl: "पार्सल में शामिल सामग्री",
+            st1: "डिस्पैच हुआ", st2: "ट्रांजिट हब", st3: "सिटी सॉर्टिंग", st4: "डिलीवरी",
+            notice_head: "कैंडिडेट हस्तलेखन दिशानिर्देश:",
+            notice_body: "केवल नीले बॉल पेन का उपयोग करें। खाली रजिस्टर में साफ़ लिखावट रखें। असाइनमेंट के किसी भी पन्ने को मोड़ें या फाड़ें नहीं।",
+            audit_head: "पार्सल आवागमन ऑडिट लॉग",
+            out_for_deliv: "डिलीवरी के लिए निकला",
+            in_transit: "इन-ट्रांजिट (नेशनल हाईवे)"
+        },
+        mr: {
+            search_title: "पार्सल वाहतूक मार्ग ट्रॅक करा",
+            btn_track: "शोधा",
+            cand_lbl: "उमेदवार:",
+            deliv_address_title: "वितरणाचा पूर्ण पत्ता",
+            phone_lbl: "संपर्क क्रमांक:",
+            origin_hub_lbl: "मूळ प्रेषण केंद्र",
+            payout_lbl: "पडताळणीनंतर मिळणारे मानधन",
+            kit_content_lbl: "पार्सल मधील साहित्य",
+            st1: "रवाना झाले", st2: "वाहतूक केंद्र", st3: "शहर वर्गीकरण", st4: "वितरण",
+            notice_head: "उमेदवारांसाठी हस्तलेखन सूचना:",
+            notice_body: "केवळ निळ्या बॉल पेनचा वापर करा. दिलेल्या कोऱ्या वहीत सुवाच्य अक्षरात लिहा. कोणतीही पाने फाडू नका.",
+            audit_head: "पार्सल वाहतूक तपशील",
+            out_for_deliv: "वितरणासाठी बाहेर",
+            in_transit: "मार्गावर (राष्ट्रीय महामार्ग)"
+        },
+        gu: {
+            search_title: "કન્સાઇનમેન્ટ રૂટ ટ્રેક કરો",
+            btn_track: "ટ્રેક કરો",
+            cand_lbl: "ઉમેદવાર:",
+            deliv_address_title: "ડિલિવરીનું સરનામું",
+            phone_lbl: "સંપર્ક નંબર:",
+            origin_hub_lbl: "ડિસ્પેચ મૂળ કેન્દ્ર",
+            payout_lbl: "ચકાસણી પછી મળવાપાત્ર રકમ",
+            kit_content_lbl: "કિટમાં સામેલ સાધન સામગ્રી",
+            st1: "ડિસ્પેચ થયું", st2: "ટ્રાન્ઝિટ હબ", st3: "સિટી સોર્ટિંગ", st4: "ડિલિવરી",
+            notice_head: "ઉમેદવાર હસ્તલેખન માર્ગદર્શિકા:",
+            notice_body: "માત્ર વાદળી બોલ પેનનો ઉપયોગ કરો. આપેલ કોરા રજિસ્ટરમાં સુવાચ્ય અક્ષરે લખો. પાના વાળવા કે ફાડવા નહીં.",
+            audit_head: "પાર્સલ મૂવમેન્ટ લોગ",
+            out_for_deliv: "ડિલિવરી માટે નીકળેલ છે",
+            in_transit: "માર્ગમાં (નેશનલ હાઈવે)"
+        },
+        ta: {
+            search_title: "பார்சல் சாலை வழியைக் கண்காணிக்கவும்",
+            btn_track: "ட்ராக்",
+            cand_lbl: "விண்ணப்பதாரர்:",
+            deliv_address_title: "டெலிவரி முகவரி",
+            phone_lbl: "தொடர்பு எண்:",
+            origin_hub_lbl: "தோற்ற மையம்",
+            payout_lbl: "சரிபார்ப்பிற்குப் பின் ஊதியம்",
+            kit_content_lbl: "தொகுப்பில் உள்ள பொருட்கள்",
+            st1: "புறப்பட்டது", st2: "போக்குவரத்து மையம்", st3: "நகர வரிசையாக்கம்", st4: "டெலிவரி",
+            notice_head: "கையெழுத்து வழிகாட்டுதல்கள்:",
+            notice_body: "நீல நிற பால்பாயிண்ட் பேனாவை மட்டுமே பயன்படுத்தவும். பக்கங்களை மடக்கவோ கிழிக்கவோ வேண்டாம்.",
+            audit_head: "பார்சல் பயண பதிவு",
+            out_for_deliv: "டெலிவரிக்கு வந்துள்ளது",
+            in_transit: "வழியில் உள்ளது"
+        },
+        te: {
+            search_title: "రవాణా మార్గాన్ని ట్రాక్ చేయండి",
+            btn_track: "ట్రాక్ చేయండి",
+            cand_lbl: "అభ్యర్థి:",
+            deliv_address_title: "డెలివరీ చిరునామా",
+            phone_lbl: "ఫోన్ నంబర్:",
+            origin_hub_lbl: "ప్రారంభ కేంద్రం",
+            payout_lbl: "ధృవీకరణ తర్వాత వేతనం",
+            kit_content_lbl: "కిట్‌లోని వస్తువులు",
+            st1: "బయలుదేరింది", st2: "రవాణా కేంద్రం", st3: "నగర విభజన", st4: "డెలివరీ",
+            notice_head: "రాత ప్రతి సూచనలు:",
+            notice_body: "నీలిరంగు బాల్ పాయింట్ పెన్ను మాత్రమే ఉపయోగించండి. పేజీలను మడతపెట్టడం లేదా చింపడం చేయవద్దు.",
+            audit_head: "పార్శిల్ ప్రయాణ వివరాలు",
+            out_for_deliv: "డెలివరీ కోసం బయలుదేరింది",
+            in_transit: "మార్గంలో ఉంది"
+        },
+        kn: {
+            search_title: "ಸಾರಿಗೆ ಮಾರ್ಗವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",
+            btn_track: "ಟ್ರ್ಯಾಕ್",
+            cand_lbl: "ಅಭ್ಯರ್ಥಿ:",
+            deliv_address_title: "ತಲುಪಿಸುವ ವಿಳಾಸ",
+            phone_lbl: "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:",
+            origin_hub_lbl: "ಪ್ರಾರಂಭಿಕ ಹಬ್",
+            payout_lbl: "ಪರಿಶೀಲನೆಯ ನಂತರ ಸಂಭಾವನೆ",
+            kit_content_lbl: "ಕಿಟ್ ಒಳಗೊಂಡಿರುವ ಸಾಮಗ್ರಿಗಳು",
+            st1: "ರವಾನಿಸಲಾಗಿದೆ", st2: "ಸಾರಿಗೆ ಕೇಂದ್ರ", st3: "ನಗರ ವಿಂಗಡಣೆ", st4: "ವಿತರಣೆ",
+            notice_head: "ಕೈಬರಹದ ನಿಯಮಗಳು:",
+            notice_body: "ನೀಲಿ ಬಾಲ್‌ಪಾಯಿಂಟ್ ಪೆನ್ ಮಾತ್ರ ಬಳಸಿ. ಒದಗಿಸಿದ ರಿಜಿಸ್ಟರ್‌ನಲ್ಲಿ ಸ್ವಚ್ಛವಾಗಿ ಬರೆಯಿರಿ. ಪುಟಗಳನ್ನು ಹರಿಯಬೇಡಿ.",
+            audit_head: "ಪಾರ್ಸೆಲ್ ಚಲನೆಯ ವಿವರಣೆ",
+            out_for_deliv: "ವಿತರಣೆಗೆ ಹೊರಟಿದೆ",
+            in_transit: "ಮಾರ್ಗ ಮಧ್ಯದಲ್ಲಿದೆ"
+        },
+        ml: {
+            search_title: "പാഴ്സൽ റോഡ് റൂട്ട് ട്രാക്ക് ചെയ്യുക",
+            btn_track: "ട്രാക്ക് ചെയ്യുക",
+            cand_lbl: "ഉദ്യോഗാർത്ഥി:",
+            deliv_address_title: "ഡെലിവറി വിലാസം",
+            phone_lbl: "ബന്ധപ്പെടേണ്ട നമ്പർ:",
+            origin_hub_lbl: "പുറപ്പെട്ട കേന്ദ്രം",
+            payout_lbl: "പരിശോധനയ്ക്ക് ശേഷമുള്ള പ്രതിഫലം",
+            kit_content_lbl: "പാക്കേജിലുള്ള സാധനങ്ങൾ",
+            st1: "പുറപ്പെട്ടു", st2: "ട്രാൻസിറ്റ് ഹബ്ബ്", st3: "നഗര സോർട്ടിംഗ്", st4: "ഡെലിവറി",
+            notice_head: "കൈയെഴുത്തു നിർദ്ദേശങ്ങൾ:",
+            notice_body: "നീല ബോൾപോയിന്റ് പേന മാത്രം ഉപയോഗിക്കുക. പേജുകൾ മടക്കുകയോ കീറുകയോ ചെയ്യരുത്.",
+            audit_head: "പാഴ്സൽ മൂവ്മെന്റ് രേഖ",
+            out_for_deliv: "ഡെലിവറിക്കായി പുറപ്പെട്ടു",
+            in_transit: "വഴിയിലാണ്"
+        },
+        bn: {
+            search_title: "পার্সেল রোড রুট ট্র্যাক করুন",
+            btn_track: "ট্র্যাক করুন",
+            cand_lbl: "প্রার্থী:",
+            deliv_address_title: "ডেলিভারি ঠিকানা",
+            phone_lbl: "যোগাযোগ নম্বর:",
+            origin_hub_lbl: "উৎস কেন্দ্র",
+            payout_lbl: "যাচাইকরণের পরে পারিশ্রমিক",
+            kit_content_lbl: "কিটে অন্তর্ভুক্ত সামগ্রী",
+            st1: "রওনা হয়েছে", st2: "ট্রানজিট হাব", st3: "শহর বাছাই", st4: "ডেলিভারি",
+            notice_head: "হাতের লেখার নির্দেশাবলী:",
+            notice_body: "শুধুমাত্র নীল বলপেন ব্যবহার করুন। প্রদত্ত রেজিস্ট্রারে পরিষ্কারভাবে লিখুন। কোনো পাতা ছিঁড়বেন না।",
+            audit_head: "পার্সেল ট্র্যাকিং বিবরণ",
+            out_for_deliv: "ডেলিভারির জন্য বেরিয়েছে",
+            in_transit: "ট্রানজিটে রয়েছে"
+        },
+        pa: {
+            search_title: "ਪਾਰਸਲ ਰੋਡ ਰੂਟ ਟਰੈਕ ਕਰੋ",
+            btn_track: "ਟਰੈਕ ਕਰੋ",
+            cand_lbl: "ਉਮੀਦਵਾਰ:",
+            deliv_address_title: "ਡਿਲੀਵਰੀ ਦਾ ਪੂਰਾ ਪਤਾ",
+            phone_lbl: "ਸੰਪਰਕ ਨੰਬਰ:",
+            origin_hub_lbl: "ਮੂਲ ਡਿਸਪੈਚ ਹੱਬ",
+            payout_lbl: "ਜਾਂਚ ਤੋਂ ਬਾਅਦ ਮਿਹਨਤਾਨਾ",
+            kit_content_lbl: "ਕਿੱਟ ਵਿੱਚ ਸ਼ਾਮਲ ਸਮੱਗਰੀ",
+            st1: "ਰਵਾਨਾ ਹੋਇਆ", st2: "ਟ੍ਰਾਂਜ਼ਿਟ ਹੱਬ", st3: "ਸ਼ਹਿਰ ਛਾਂਟੀ", st4: "ਡਿਲੀਵਰੀ",
+            notice_head: "ਹੱਥ ਲਿਖਤ ਹਦਾਇਤਾਂ:",
+            notice_body: "ਸਿਰਫ਼ ਨੀਲੇ ਬਾਲ ਪੈੱਨ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਦਿੱਤੇ ਰਜਿਸਟਰ ਵਿੱਚ ਸਾਫ਼ ਲਿਖੋ। ਕੋਈ ਵੀ ਪੰਨਾ ਨਾ ਪਾੜੋ।",
+            audit_head: "ਪਾਰਸਲ ਆਵਾਜਾਈ ਲੌਗ",
+            out_for_deliv: "ਡਿਲੀਵਰੀ ਲਈ ਨਿਕਲਿਆ",
+            in_transit: "ਰਸਤੇ ਵਿੱਚ (ਹਾਈਵੇਅ)"
+        }
     };
+
+    let activeData = null;
+    let mapInstance = null;
+
+    function changeLanguage() {
+        const lang = document.getElementById('langSelect').value;
+        const dict = translations[lang] || translations.en;
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) el.innerText = dict[key];
+        });
+
+        if (activeData) {
+            const badge = document.getElementById('badgePill');
+            badge.innerText = activeData.step === 4 ? dict.out_for_deliv : (activeData.step === 2 ? dict.in_transit : "ACTIVE");
+        }
+    }
 
     window.onload = function() {
         const params = new URLSearchParams(window.location.search);
-        const encoded = params.get('kit');
+        const pkg = params.get('pkg');
         const code = params.get('code');
 
-        if(encoded) {
-            try {
-                const data = JSON.parse(decodeURIComponent(encoded));
-                document.getElementById('trackInput').value = data.trk;
-                renderPage(data);
-            } catch(e) { console.error(e); }
-        } else if(code) {
-            document.getElementById('trackInput').value = code;
-            fetchShipment();
-        }
-    };
-
-    function fetchShipment() {
-        const code = document.getElementById('trackInput').value.trim();
-        if(!code) return alert("कृपया कंसाइनमेंट / ट्रैकिंग नंबर दर्ज करें!");
-
-        const local = localStorage.getItem("SBP_" + code);
-        if(local) {
-            renderPage(JSON.parse(local));
-        } else {
-            alert("यह कंसाइनमेंट नंबर रिकॉर्ड में नहीं मिला। कृपया कोड जांचें।");
-        }
-    }
-
-    function renderPage(d) {
-        document.getElementById('mainCard').style.display = 'block';
-        document.getElementById('codeText').innerText = d.trk;
-        document.getElementById('dispProject').innerText = d.proj;
-        document.getElementById('dispCandidate').innerText = d.name;
-        document.getElementById('dispCandidateId').innerText = d.candId || 'REG-PENDING';
-        document.getElementById('dispDest').innerText = d.city;
-        document.getElementById('dispWork').innerText = d.work;
-        document.getElementById('dispPay').innerText = d.pay;
-        document.getElementById('dispDeadline').innerText = d.dead;
-        document.getElementById('dispKit').innerText = d.kit;
-
-        // Stepper Progress
-        const st1 = document.getElementById('st1');
-        const st2 = document.getElementById('st2');
-        const st3 = document.getElementById('st3');
-        const st4 = document.getElementById('st4');
-        const line = document.getElementById('stepLineFill');
-        const badge = document.getElementById('badgePill');
-
-        [st1, st2, st3, st4].forEach(s => s.classList.remove('done'));
-
-        if(d.step === 1) {
-            st1.classList.add('done');
-            line.style.width = '10%';
-            badge.innerText = 'DISPATCH MANIFESTED';
-        } else if(d.step === 2) {
-            st1.classList.add('done'); st2.classList.add('done');
-            line.style.width = '40%';
-            badge.innerText = 'IN TRANSIT (INTER-DISTRICT)';
-        } else if(d.step === 3) {
-            st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done');
-            line.style.width = '70%';
-            badge.innerText = 'AT LOCAL SPEED POST HUB';
-        } else if(d.step >= 4) {
-            st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done'); st4.classList.add('done');
-            line.style.width = '100%';
-            badge.innerText = d.step === 5 ? 'DELIVERED TO CANDIDATE' : 'OUT FOR DELIVERY';
-        }
-
-        buildTimeline(d);
-        renderMap(d);
-    }
-
-    function buildTimeline(d) {
-        const box = document.getElementById('timelineContainer');
-        box.innerHTML = "";
-        const events = [];
-        const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-
-        if(d.step >= 4) {
-            events.push({
-                active: true,
-                time: today + ", 09:15 AM",
-                loc: d.currLoc,
-                note: "Postal delivery executive out for doorstep delivery of official handwriting kit."
-            });
-        }
-        if(d.step >= 3) {
-            events.push({
-                active: d.step === 3,
-                time: today + ", 05:40 AM",
-                loc: d.city + " Nodal Postal Facility",
-                note: "Consignment bag received and sorted for regional delivery."
-            });
-        }
-        if(d.step >= 2) {
-            events.push({
-                active: d.step === 2,
-                time: "Yesterday, 08:30 PM",
-                loc: d.currLoc.includes("Transit") ? d.currLoc : "Inter-State Sorting Hub",
-                note: "Package verified & transferred into night express container linehaul."
-            });
-        }
-        events.push({
-            active: d.step === 1,
-            time: "2 Days ago, 03:00 PM",
-            loc: d.origLoc,
-            note: "Assignment kit manifested, barcode sealed, and handed over to postal logistics."
-        });
-
-        events.forEach(ev => {
-            box.innerHTML += `
-                <div class="t-row ${ev.active ? 'active' : ''}">
-                    <div class="t-circle"></div>
-                    <div>
-                        <div class="t-time">${ev.time}</div>
-                        <div class="t-place">${ev.loc}</div>
-                        <div class="t-note">${ev.note}</div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function getCoords(cityName) {
-        const clean = cityName.toLowerCase();
-        for(let key in cityCoordinates) {
-            if(clean.includes(key)) return cityCoordinates[key];
-        }
-        return [28.7041, 77.1025]; // Default Delhi
-    }
-
-    function renderMap(d) {
-        const destCoord = getCoords(d.city);
-        const origCoord = getCoords(d.origLoc);
-
-        if(map) map.remove();
-
-        map = L.map('map').setView(destCoord, 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        L.marker(origCoord).addTo(map).bindPopup(`<b>Origin:</b> Saraswati Press (${d.origLoc})`);
-        L.marker(destCoord).addTo(map).bindPopup(`<b>Candidate Destination:</b> ${d.city}<br>${d.name}`).openPopup();
-
-        const route = L.polyline([origCoord, destCoord], { color: '#1e3a8a', weight: 3, dashArray: '6, 8' }).addTo(map);
-        map.fitBounds(route.getBounds(), { padding: [35, 35] });
-    }
-</script>
-
-</body>
-</html>
+        
