@@ -3,110 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courier Admin Panel - Create Tracking</title>
+    <title>Courier Pro Admin - Custom Tracking Generator</title>
     <style>
+        :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .admin-card { background: white; width: 100%; max-width: 500px; padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h2 { color: #0b5ed7; margin-bottom: 20px; font-size: 22px; display: flex; align-items: center; gap: 8px; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; outline: none; }
-        input:focus, select:focus { border-color: #0b5ed7; ring: 2px solid #0b5ed7; }
-        .btn-row { display: flex; gap: 8px; }
-        .btn { background: #0b5ed7; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
-        .btn:hover { background: #094cb3; }
-        .btn-gen { background: #e5e7eb; color: #374151; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; white-space: nowrap; font-weight: 600; }
+        body { background: var(--bg); padding: 20px; display: flex; justify-content: center; }
+        .admin-card { background: white; width: 100%; max-width: 650px; padding: 28px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        h2 { color: var(--primary); font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .btn-gen { background: #e2e8f0; color: #1e293b; padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-main { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-main:hover { background: #1d4ed8; }
         
-        .result-box { display: none; margin-top: 24px; background: #f8fafc; border: 1px dashed #0b5ed7; padding: 16px; border-radius: 8px; }
-        .code-display { font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 1px; margin: 8px 0; }
-        .share-btn { background: #10b981; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        /* Presets */
+        .presets { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .preset-badge { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; font-weight: 600; }
+        .preset-badge:hover { background: #dbeafe; }
+
+        .result-box { display: none; margin-top: 25px; background: #f0fdf4; border: 1.5px dashed #22c55e; padding: 20px; border-radius: 12px; }
+        .code-display { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: 1.5px; margin: 5px 0; }
+        .share-btn { background: #16a34a; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="admin-card">
-    <h2>⚡ Logistics Admin Panel</h2>
+    <h2>🚚 Express Cargo Control Center</h2>
     
-    <div class="form-group">
-        <label>Tracking Number (कूरियर कोड)</label>
-        <div class="btn-row">
-            <input type="text" id="trkCode" placeholder="उदा. EXP-982341">
-            <button class="btn-gen" onclick="generateCode()">Auto Generate</button>
+    <div style="margin-bottom: 15px;">
+        <label>⚡ Quick Prank Presets (तुरंत भरने के लिए क्लिक करें):</label>
+        <div class="presets">
+            <span class="preset-badge" onclick="loadPreset('iphone')">📱 iPhone 16 Pro Max</span>
+            <span class="preset-badge" onclick="loadPreset('ps5')">🎮 PlayStation 5 Disc</span>
+            <span class="preset-badge" onclick="loadPreset('sneakers')">👟 Nike Air Jordan 1</span>
+            <span class="preset-badge" onclick="loadPreset('gold')">💍 Tanishq Gold Ring</span>
         </div>
     </div>
 
+    <div class="section-title">1. Basic Shipment Details</div>
     <div class="form-group">
-        <label>Product Name (सामान का नाम)</label>
-        <input type="text" id="prodName" placeholder="उदा. Apple iPhone 15 Pro Max 256GB">
+        <label>Tracking Number (AWB Code)</label>
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="trkCode" placeholder="EXP-89410291IN">
+            <button class="btn-gen" onclick="autoGenerateCode()">Random</button>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Receiver's Name (दोस्त का नाम)</label>
-        <input type="text" id="recvName" placeholder="उदा. Rahul Sharma">
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Product Name (सामान)</label>
+            <input type="text" id="prodName" placeholder="e.g. Apple iPhone 16 Pro (256 GB)">
+        </div>
+        <div class="form-group">
+            <label>Payment Method & Amount</label>
+            <select id="paymentType">
+                <option value="Prepaid (₹0 Due)">Prepaid (Paid Online - ₹0 Due)</option>
+                <option value="Cash on Delivery (₹48,990 Due)">Cash on Delivery (₹48,990 to collect) 😈</option>
+                <option value="Cash on Delivery (₹1,49,990 Due)">COD (₹1,49,990 to collect) 💀</option>
+            </select>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Destination City (डिलीवरी शहर)</label>
-        <input type="text" id="destCity" placeholder="उदा. Jaipur, Rajasthan">
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Receiver Name (दोस्त का नाम)</label>
+            <input type="text" id="recvName" placeholder="Rahul Sharma">
+        </div>
+        <div class="form-group">
+            <label>Destination City (दोस्त का शहर)</label>
+            <input type="text" id="destCity" placeholder="Jaipur, Rajasthan">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Dispatch Date (कब रवाना हुआ)</label>
-        <input type="date" id="dispatchDate">
-        <small style="color: #6b7280; font-size: 11px;">* अगर आज से 2 दिन पहले की डेट चुनेंगे, तो तुरंत 'Day 2' का स्टेटस दिखेगा।</small>
+    <div class="section-title">2. Current Location & Delivery Status (जहाँ दिखाना है)</div>
+    
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Current Status (कहाँ तक पहुँचा)</label>
+            <select id="statusStep" onchange="handleStatusChange()">
+                <option value="1">1. Picked Up (Warehouse)</option>
+                <option value="2">2. In Transit (बीच के रास्ते/हब में)</option>
+                <option value="3">3. At Local Hub (दोस्त के शहर का हब)</option>
+                <option value="4" selected>4. Out for Delivery (आज डिलीवरी होगी)</option>
+                <option value="5">5. Delivered Successfully</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Current Location Text (लाइव लोकेशन नाम)</label>
+            <input type="text" id="currentLocName" placeholder="e.g. Jaipur North Hub / Ahmedabad Transit Hub">
+        </div>
     </div>
 
-    <button class="btn" onclick="saveShipment()">Create Shipment 🚀</button>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Origin / Dispatch City (कहाँ से चला)</label>
+            <input type="text" id="originCity" value="Mumbai Central Warehouse">
+        </div>
+        <div class="form-group">
+            <label>Delivery OTP (दोस्त को दिखाने के लिए)</label>
+            <input type="text" id="deliveryOtp" value="7492">
+        </div>
+    </div>
+
+    <div class="section-title">3. Delivery Agent Details (अगर Out for Delivery चुना है)</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Rider Name</label>
+            <input type="text" id="riderName" value="Vikram Singh">
+        </div>
+        <div class="form-group">
+            <label>Rider Vehicle & Phone</label>
+            <input type="text" id="riderVehicle" value="Hero Electric (RJ-14-EQ-4012) • 9829XXXXXX">
+        </div>
+    </div>
+
+    <button class="btn-main" onclick="generateAndSave()">Generate Live Tracking Link 🚀</button>
 
     <div class="result-box" id="resultBox">
-        <div style="font-size: 12px; color: #6b7280;">Shipment Created Successfully!</div>
-        <div class="code-display" id="resCode">EXP-000000</div>
-        <button class="share-btn" onclick="copyTrackingLink()">📋 Copy Direct Tracking Link</button>
+        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ Shipment Active & Ready to Track!</div>
+        <div class="code-display" id="resCode">EXP-00000000</div>
+        <button class="share-btn" onclick="copyLink()">📋 Copy Direct Link (दोस्त को WhatsApp पर भेजें)</button>
     </div>
 </div>
 
 <script>
-    // आज की तारीख डिफ़ॉल्ट सेट करें
-    document.getElementById('dispatchDate').value = new Date().toISOString().split('T')[0];
+    let finalShareUrl = "";
 
-    function generateCode() {
-        const randomNum = Math.floor(100000 + Math.random() * 900000);
-        document.getElementById('trkCode').value = 'EXP-' + randomNum;
+    function autoGenerateCode() {
+        const rand = Math.floor(10000000 + Math.random() * 90000000);
+        document.getElementById('trkCode').value = 'EXP-' + rand + 'IN';
+    }
+    autoGenerateCode();
+
+    function handleStatusChange() {
+        const step = document.getElementById('statusStep').value;
+        const dest = document.getElementById('destCity').value || "Destination City";
+        const locInput = document.getElementById('currentLocName');
+
+        if(step === "1") locInput.value = "Mumbai Central Logistics Hub";
+        else if(step === "2") locInput.value = "National Highway Transshipment Hub (In-Transit)";
+        else if(step === "3") locInput.value = dest + " Primary Sorting Facility";
+        else if(step === "4") locInput.value = dest + " Local Hub (On delivery route)";
+        else if(step === "5") locInput.value = dest + " (Delivered to Doorstep)";
     }
 
-    let generatedLink = "";
+    function loadPreset(type) {
+        if(type === 'iphone') {
+            document.getElementById('prodName').value = "Apple iPhone 16 Pro Max 256GB (Desert Titanium)";
+            document.getElementById('paymentType').value = "Prepaid (₹0 Due)";
+        } else if(type === 'ps5') {
+            document.getElementById('prodName').value = "Sony PlayStation 5 Slim (Disc Edition) + Extra Controller";
+            document.getElementById('paymentType').value = "Cash on Delivery (₹48,990 Due)";
+        } else if(type === 'sneakers') {
+            document.getElementById('prodName').value = "Nike Air Jordan 1 Retro High OG (Chicago Edition)";
+            document.getElementById('paymentType').value = "Prepaid (₹0 Due)";
+        } else if(type === 'gold') {
+            document.getElementById('prodName').value = "Tanishq 22K Hallmarked Gold Solitaire Ring";
+            document.getElementById('paymentType').value = "Cash on Delivery (₹1,49,990 Due)";
+        }
+        handleStatusChange();
+    }
 
-    function saveShipment() {
-        const trk = document.getElementById('trkCode').value.trim();
-        const prod = document.getElementById('prodName').value.trim();
-        const recv = document.getElementById('recvName').value.trim();
-        const city = document.getElementById('destCity').value.trim();
-        const date = document.getElementById('dispatchDate').value;
+    function generateAndSave() {
+        const data = {
+            trk: document.getElementById('trkCode').value.trim(),
+            prod: document.getElementById('prodName').value.trim(),
+            pay: document.getElementById('paymentType').value,
+            recv: document.getElementById('recvName').value.trim(),
+            dest: document.getElementById('destCity').value.trim(),
+            step: parseInt(document.getElementById('statusStep').value),
+            currLoc: document.getElementById('currentLocName').value.trim(),
+            origLoc: document.getElementById('originCity').value.trim(),
+            otp: document.getElementById('deliveryOtp').value.trim(),
+            rider: document.getElementById('riderName').value.trim(),
+            riderVeh: document.getElementById('riderVehicle').value.trim()
+        };
 
-        if(!trk || !prod || !recv || !city || !date) {
-            alert("कृपया सभी फ़ील्ड्स भरें!");
+        if(!data.trk || !data.prod || !data.recv || !data.dest) {
+            alert("कृपया सभी ज़रूरी डिटेल्स भरें!");
             return;
         }
 
-        const shipmentData = { trk, prod, recv, city, date };
+        // 1. LocalStorage में स्टोर
+        localStorage.setItem("TRACK_" + data.trk, JSON.stringify(data));
 
-        // 1. LocalStorage में सेव (ताकि उसी ब्राउज़र पर कोड डालने पर काम करे)
-        localStorage.setItem("TRK_" + trk, JSON.stringify(shipmentData));
-
-        // 2. Direct Link तैयार करें (ताकि दोस्त को WhatsApp पर लिंक भेजें तो बिना डेटाबेस के भी चले)
-        const encoded = encodeURIComponent(JSON.stringify(shipmentData));
+        // 2. Base64 URL बनाना ताकि दोस्त को बिना डेटाबेस भी लाइव दिखे
+        const encoded = encodeURIComponent(JSON.stringify(data));
         const currentUrl = window.location.href;
-        const trackUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/track.html?d=' + encoded;
-        generatedLink = trackUrl;
+        finalShareUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/track.html?data=' + encoded;
 
-        document.getElementById('resCode').innerText = trk;
+        document.getElementById('resCode').innerText = data.trk;
         document.getElementById('resultBox').style.display = 'block';
     }
 
-    function copyTrackingLink() {
-        navigator.clipboard.writeText(generatedLink);
-        alert("ट्रैकिंग लिंक कॉपी हो गया! अब इसे दोस्त को WhatsApp या चैट पर भेजें।");
+    function copyLink() {
+        navigator.clipboard.writeText(finalShareUrl);
+        alert("ट्रैकिंग लिंक कॉपी हो गया! इसे अपने दोस्त को भेजें।");
     }
 </script>
 
