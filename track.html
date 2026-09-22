@@ -3,271 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Express Logistics - Live Parcel Tracking</title>
+    <title>Express Air Logistics - Consignment Tracking</title>
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        :root { --primary: #0f172a; --blue: #2563eb; --green: #16a34a; --text: #1e293b; --muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #f3f4f6; color: #1f2937; padding: 15px; display: flex; justify-content: center; }
-        .track-container { width: 100%; max-width: 520px; }
-        
+        body { background: #f1f5f9; color: var(--text); padding-bottom: 50px; }
+
+        /* Top Navbar */
+        .navbar { background: white; border-bottom: 1px solid #e2e8f0; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 18px; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+        .logo span { background: #2563eb; color: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; }
+        .ssl-badge { font-size: 11px; color: #16a34a; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+        .container { max-width: 580px; margin: 20px auto; padding: 0 15px; }
+
         /* Search Box */
-        .search-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .search-row { display: flex; gap: 8px; margin-top: 10px; }
-        .search-input { flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-weight: 600; text-transform: uppercase; }
-        .search-btn { background: #0b5ed7; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .search-box { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 15px; }
+        .search-input-wrap { display: flex; gap: 8px; margin-top: 8px; }
+        .search-input { flex: 1; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+        .search-btn { background: var(--blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* Main Card */
+        .track-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); display: none; }
         
-        /* Main Result Card */
-        .result-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); display: none; }
-        .header { background: #0f172a; color: white; padding: 20px; }
-        .badge { display: inline-block; background: #22c55e; color: white; font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: bold; letter-spacing: 0.5px; animation: pulse 2s infinite; }
-        
-        /* Stepper Progress */
-        .progress-bar-container { display: flex; justify-content: space-between; position: relative; margin: 25px 0 10px 0; }
-        .progress-line { position: absolute; top: 12px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
-        .progress-line-fill { position: absolute; top: 12px; left: 10%; height: 3px; background: #0b5ed7; z-index: 1; transition: width 0.5s ease; }
+        /* Header & Barcode */
+        .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 22px; position: relative; }
+        .status-pill { display: inline-block; background: #22c55e; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .barcode { font-family: monospace; font-size: 26px; letter-spacing: 5px; opacity: 0.35; margin-top: 6px; user-select: none; }
+        .product-title { font-size: 17px; font-weight: 700; margin-top: 10px; line-height: 1.3; }
+
+        /* Package Details Table */
+        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+        .spec-item b { color: var(--text); display: block; font-size: 13px; margin-top: 2px; }
+
+        /* Map */
+        #map { height: 220px; width: 100%; border-bottom: 1px solid #e2e8f0; }
+
+        /* Stepper */
+        .stepper-container { padding: 20px; background: white; border-bottom: 1px solid #e2e8f0; }
+        .stepper { display: flex; justify-content: space-between; position: relative; }
+        .step-line { position: absolute; top: 14px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
+        .step-line-active { position: absolute; top: 14px; left: 10%; height: 3px; background: var(--blue); z-index: 1; transition: width 0.4s ease; }
         .step { position: relative; z-index: 2; text-align: center; width: 25%; font-size: 11px; font-weight: 600; color: #94a3b8; }
-        .step-circle { width: 26px; height: 26px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 12px; }
-        .step.active .step-circle { background: #0b5ed7; color: white; }
-        .step.active { color: #0b5ed7; }
+        .step-dot { width: 30px; height: 30px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 13px; font-weight: bold; }
+        .step.done .step-dot { background: var(--blue); color: white; }
+        .step.done { color: var(--blue); }
+
+        /* OTP Alert Card */
+        .otp-alert { background: #fefce8; border: 1.5px dashed #ca8a04; border-radius: 10px; padding: 14px; margin: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .otp-number { font-size: 22px; font-weight: 900; color: #a16207; letter-spacing: 2px; }
+
+        /* Rider Info */
+        .rider-box { margin: 0 20px 18px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; }
+        .rider-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
 
         /* Timeline History */
-        .timeline-section { padding: 20px; }
-        .timeline-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: #334155; }
-        .timeline-item { display: flex; gap: 16px; margin-bottom: 20px; position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: 7px; top: 18px; bottom: -18px; width: 2px; background: #e2e8f0; }
-        .timeline-item:last-child::before { display: none; }
-        .timeline-dot { width: 16px; height: 16px; border-radius: 50%; background: #94a3b8; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; margin-top: 2px; }
-        .timeline-item.active .timeline-dot { background: #0b5ed7; box-shadow: 0 0 0 2px #93c5fd; }
-        .timeline-info { flex: 1; font-size: 13px; }
-        .timeline-time { color: #64748b; font-size: 11px; margin-bottom: 2px; }
-        .timeline-loc { font-weight: 700; color: #1e293b; }
-        .timeline-desc { color: #475569; margin-top: 2px; }
+        .timeline { padding: 20px; }
+        .timeline-title { font-size: 14px; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .t-item { display: flex; gap: 16px; position: relative; margin-bottom: 22px; }
+        .t-item::after { content: ''; position: absolute; left: 8px; top: 22px; bottom: -22px; width: 2px; background: #e2e8f0; }
+        .t-item:last-child::after { display: none; }
+        .t-dot { width: 18px; height: 18px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; flex-shrink: 0; margin-top: 2px; }
+        .t-item.active .t-dot { background: var(--blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.4); }
+        .t-time { font-size: 11px; color: var(--muted); font-weight: 500; }
+        .t-loc { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
+        .t-desc { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
 
-        .delivery-guy-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 15px; display: flex; align-items: center; gap: 12px; }
-        .delivery-guy-card img { width: 45px; height: 45px; border-radius: 50%; }
-
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .btn-call { background: #2563eb; color: white; border: none; padding: 7px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-<div class="track-container">
+<div class="navbar">
+    <div class="logo">EXPRESS<span>AIR</span></div>
+    <div class="ssl-badge">🔒 256-bit Encrypted Portal</div>
+</div>
+
+<div class="container">
     <!-- Search Bar -->
-    <div class="search-card">
-        <h3 style="font-size: 16px; color: #0b5ed7;">📦 Express Courier Tracking</h3>
-        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Enter your AWB / Tracking number to trace order</p>
-        <div class="search-row">
-            <input type="text" id="trackInput" class="search-input" placeholder="e.g. EXP-894102">
-            <button class="search-btn" onclick="searchOrder()">Track</button>
+    <div class="search-box">
+        <div style="font-size: 12px; font-weight: bold; color: #64748b;">CONSIGNMENT TRACKING</div>
+        <div class="search-input-wrap">
+            <input type="text" id="trkInput" class="search-input" placeholder="Enter AWB Code (e.g. EXP-...)">
+            <button class="search-btn" onclick="fetchOrder()">Track</button>
         </div>
     </div>
 
-    <!-- Live Details Card -->
-    <div class="result-card" id="resultCard">
+    <!-- Tracking Result Main Card -->
+    <div class="track-card" id="trackCard">
         <div class="header">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="badge" id="statusBadge">IN TRANSIT</span>
-                <span style="font-size: 12px; opacity: 0.8;" id="trackNumberText">EXP-000000</span>
+                <span class="status-pill" id="badgeStatus">OUT FOR DELIVERY</span>
+                <span style="font-size: 11px; opacity: 0.8;" id="awbNumber">EXP-00000000</span>
             </div>
-            <h2 style="font-size: 18px; margin-top: 8px;" id="productName">Product Name</h2>
-            <div style="font-size: 12px; opacity: 0.9; margin-top: 4px;">Deliver to: <b id="recipientName">User</b> (<span id="destinationCity">City</span>)</div>
+            <div class="barcode">||||||||||||||||||||||||||||</div>
+            <div class="product-title" id="dispProduct">Item Name</div>
+            <div style="font-size: 12px; opacity: 0.9; margin-top: 6px;">
+                Recipient: <b id="dispRecipient">Rahul</b> • Delivery To: <span id="dispDest">City</span>
+            </div>
         </div>
 
-        <!-- 4-Step Progress Bar -->
-        <div style="padding: 15px 15px 0 15px;">
-            <div class="progress-bar-container">
-                <div class="progress-line"></div>
-                <div class="progress-line-fill" id="progressFill" style="width: 25%;"></div>
+        <!-- Specifications -->
+        <div class="specs-grid">
+            <div class="spec-item">
+                <span style="color: #64748b;">Payment Status</span>
+                <b id="dispPayment" style="color: #b91c1c;">Cash on Delivery</b>
+            </div>
+            <div class="spec-item">
+                <span style="color: #64748b;">Shipping Service</span>
+                <b>Priority Surface Air Express</b>
+            </div>
+            <div class="spec-item">
+                <span style="color: #64748b;">Weight & Dimensions</span>
+                <b>0.680 kg (Standard Box)</b>
+            </div>
+            <div class="spec-item">
+                <span style="color: #64748b;">Estimated Delivery</span>
+                <b style="color: #16a34a;">Today by 07:30 PM</b>
+            </div>
+        </div>
+
+        <!-- Interactive Map -->
+        <div id="map"></div>
+
+        <!-- Stepper -->
+        <div class="stepper-container">
+            <div class="stepper">
+                <div class="step-line"></div>
+                <div class="step-line-active" id="stepLineActive" style="width: 75%;"></div>
                 
-                <div class="step" id="step1">
-                    <div class="step-circle">1</div>
-                    <div>Booked</div>
-                </div>
-                <div class="step" id="step2">
-                    <div class="step-circle">2</div>
-                    <div>In Transit</div>
-                </div>
-                <div class="step" id="step3">
-                    <div class="step-circle">3</div>
-                    <div>Local Hub</div>
-                </div>
-                <div class="step" id="step4">
-                    <div class="step-circle">4</div>
-                    <div>Delivery</div>
-                </div>
+                <div class="step" id="s1"><div class="step-dot">✓</div>Booked</div>
+                <div class="step" id="s2"><div class="step-dot">✓</div>Transit</div>
+                <div class="step" id="s3"><div class="step-dot">✓</div>Local Hub</div>
+                <div class="step" id="s4"><div class="step-dot">✓</div>Out</div>
             </div>
         </div>
 
-        <!-- Timeline Section -->
-        <div class="timeline-section">
-            <div class="timeline-title">Shipment Journey</div>
-            <div id="timelineList">
-                <!-- Dynamically injected via JavaScript -->
+        <!-- OTP Box (If Out for Delivery) -->
+        <div class="otp-alert" id="otpBox">
+            <div>
+                <div style="font-size: 11px; font-weight: bold; color: #854d0e;">SAFE DELIVERY PASSCODE</div>
+                <div style="font-size: 12px; color: #713f12;">Share this OTP with driver at delivery</div>
             </div>
+            <div class="otp-number" id="dispOtp">7492</div>
+        </div>
 
-            <!-- Delivery Rider Box (Only visible on Day 3/Day 4) -->
-            <div class="delivery-guy-card" id="riderCard" style="display: none;">
-                <img src="https://i.pravatar.cc/150?img=68" alt="Rider">
-                <div>
-                    <div style="font-weight: bold; font-size: 13px;">Manoj Kumar (Delivery Partner)</div>
-                    <div style="font-size: 11px; color: #64748b;">Assigned to deliver by 07:00 PM • ⭐ 4.9</div>
-                    <div style="font-size: 11px; color: #0b5ed7; font-weight: bold; margin-top: 2px;">Share OTP 4892 upon arrival</div>
-                </div>
+        <!-- Delivery Rider (If Out for Delivery) -->
+        <div class="rider-box" id="riderBox">
+            <img src="https://i.pravatar.cc/120?img=11" class="rider-avatar" alt="Rider">
+            <div>
+                <div style="font-weight: bold; font-size: 14px;" id="dispRiderName">Vikram Singh</div>
+                <div style="font-size: 11px; color: #64748b;" id="dispRiderVeh">Hero Electric • RJ14-EQ-4012</div>
+                <a href="javascript:alert('Connecting secure call to delivery partner...')" class="btn-call">📞 Call Partner</a>
             </div>
+        </div>
+
+        <!-- Audit Timeline -->
+        <div class="timeline">
+            <div class="timeline-title">Audit Trail & Location History</div>
+            <div id="timelineContainer"></div>
         </div>
     </div>
 </div>
 
+<!-- Leaflet Map JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // पेज लोड होते ही चेक करें कि क्या URL में डेटा है
+    let mapInstance = null;
+
+    // भारतीय शहरों के डिफ़ॉल्ट कोऑर्डिनेट्स (मैप दिखाने के लिए)
+    const cityCoords = {
+        "mumbai": [19.0760, 72.8777],
+        "delhi": [28.7041, 77.1025],
+        "jaipur": [26.9124, 75.7873],
+        "ahmedabad": [23.0225, 72.5714],
+        "bengaluru": [12.9716, 77.5946],
+        "kolkata": [22.5726, 88.3639],
+        "lucknow": [26.8467, 80.9462],
+        "pune": [18.5204, 73.8567],
+        "hyderabad": [17.3850, 78.4867],
+        "chandigarh": [30.7333, 76.7794]
+    };
+
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('d');
-        const queryCode = urlParams.get('code');
+        const encoded = urlParams.get('data');
+        const code = urlParams.get('code');
 
-        if(encodedData) {
+        if(encoded) {
             try {
-                const data = JSON.parse(decodeURIComponent(encodedData));
-                document.getElementById('trackInput').value = data.trk;
-                renderTracking(data);
+                const data = JSON.parse(decodeURIComponent(encoded));
+                document.getElementById('trkInput').value = data.trk;
+                renderPage(data);
             } catch(e) { console.error(e); }
-        } else if(queryCode) {
-            document.getElementById('trackInput').value = queryCode;
-            searchOrder();
+        } else if(code) {
+            document.getElementById('trkInput').value = code;
+            fetchOrder();
         }
     };
 
-    function searchOrder() {
-        const code = document.getElementById('trackInput').value.trim();
-        if(!code) return alert("कृपया ट्रैकिंग कोड डालें!");
+    function fetchOrder() {
+        const trk = document.getElementById('trkInput').value.trim();
+        if(!trk) return alert("कृपया ट्रैकिंग कोड डालें!");
 
-        const localData = localStorage.getItem("TRK_" + code);
-        if(localData) {
-            renderTracking(JSON.parse(localData));
+        const local = localStorage.getItem("TRACK_" + trk);
+        if(local) {
+            renderPage(JSON.parse(local));
         } else {
-            alert("यह ट्रैकिंग कोड नहीं मिला! कृपया सही कोड जांचें।");
+            alert("कूरियर नंबर रिकॉर्ड्स में नहीं मिला। कृपया कोड चेक करें।");
         }
     }
 
-    function renderTracking(order) {
-        document.getElementById('resultCard').style.display = 'block';
-        document.getElementById('trackNumberText').innerText = order.trk;
-        document.getElementById('productName').innerText = order.prod;
-        document.getElementById('recipientName').innerText = order.recv;
-        document.getElementById('destinationCity').innerText = order.city;
+    function renderPage(d) {
+        document.getElementById('trackCard').style.display = 'block';
+        document.getElementById('awbNumber').innerText = d.trk;
+        document.getElementById('dispProduct').innerText = d.prod;
+        document.getElementById('dispRecipient').innerText = d.recv;
+        document.getElementById('dispDest').innerText = d.dest;
+        document.getElementById('dispPayment').innerText = d.pay;
+        document.getElementById('dispOtp').innerText = d.otp || '5912';
+        document.getElementById('dispRiderName').innerText = (d.rider || "Vikram Singh") + " (Delivery Associate)";
+        document.getElementById('dispRiderVeh').innerText = d.riderVeh || "Hero Electric • RJ14-EQ-4012";
 
-        // कितने दिन बीत चुके हैं कैलकुलेट करें
-        const dispatchDate = new Date(order.date);
-        const today = new Date();
-        
-        // Days difference
-        const d1 = new Date(dispatchDate.getFullYear(), dispatchDate.getMonth(), dispatchDate.getDate());
-        const d2 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const diffDays = Math.max(0, Math.floor((d2 - d1) / (1000 * 60 * 60 * 24)));
+        // Stepper और Status Pill
+        const s1 = document.getElementById('s1');
+        const s2 = document.getElementById('s2');
+        const s3 = document.getElementById('s3');
+        const s4 = document.getElementById('s4');
+        const stepLine = document.getElementById('stepLineActive');
+        const badge = document.getElementById('badgeStatus');
+        const otpBox = document.getElementById('otpBox');
+        const riderBox = document.getElementById('riderBox');
 
-        updateTimeline(diffDays, order);
+        [s1, s2, s3, s4].forEach(s => s.classList.remove('done'));
+        otpBox.style.display = 'none';
+        riderBox.style.display = 'none';
+
+        if(d.step === 1) {
+            s1.classList.add('done');
+            stepLine.style.width = '10%';
+            badge.innerText = 'BOOKED & PICKED UP';
+        } else if(d.step === 2) {
+            s1.classList.add('done'); s2.classList.add('done');
+            stepLine.style.width = '40%';
+            badge.innerText = 'IN TRANSIT';
+        } else if(d.step === 3) {
+            s1.classList.add('done'); s2.classList.add('done'); s3.classList.add('done');
+            stepLine.style.width = '70%';
+            badge.innerText = 'AT LOCAL HUB';
+        } else if(d.step >= 4) {
+            s1.classList.add('done'); s2.classList.add('done'); s3.classList.add('done'); s4.classList.add('done');
+            stepLine.style.width = '100%';
+            badge.innerText = d.step === 5 ? 'DELIVERED' : 'OUT FOR DELIVERY';
+            if(d.step === 4) {
+                otpBox.style.display = 'flex';
+                riderBox.style.display = 'flex';
+            }
+        }
+
+        // Timeline Build
+        buildTimeline(d);
+
+        // Map Render
+        renderMap(d);
     }
 
-    function updateTimeline(days, order) {
-        const timelineList = document.getElementById('timelineList');
-        timelineList.innerHTML = "";
+    function buildTimeline(d) {
+        const list = document.getElementById('timelineContainer');
+        list.innerHTML = "";
 
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        const step4 = document.getElementById('step4');
-        const progressFill = document.getElementById('progressFill');
-        const badge = document.getElementById('statusBadge');
-        const riderCard = document.getElementById('riderCard');
+        const events = [];
+        const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
-        // Reset
-        [step1, step2, step3, step4].forEach(s => s.classList.remove('active'));
-        riderCard.style.display = 'none';
-
-        let events = [];
-
-        // Day 0: Dispatch
+        if(d.step >= 4) {
+            events.push({
+                active: true,
+                time: today + ", 08:45 AM",
+                loc: d.currLoc,
+                desc: "Out for delivery with associate " + d.rider + ". Expected delivery by evening."
+            });
+        }
+        if(d.step >= 3) {
+            events.push({
+                active: d.step === 3,
+                time: today + ", 05:12 AM",
+                loc: d.dest + " Delivery Facility",
+                desc: "Consignment bag received and processed at final destination facility."
+            });
+        }
+        if(d.step >= 2) {
+            events.push({
+                active: d.step === 2,
+                time: "Yesterday, 09:20 PM",
+                loc: d.currLoc.includes("Transit") ? d.currLoc : "Transshipment Sort Facility",
+                desc: "Package sorted and manifested in inter-city container transit."
+            });
+        }
         events.push({
-            active: days === 0,
-            time: formatDate(order.date, 0) + " • 04:30 PM",
-            loc: "Central Logistics Hub (Warehouse)",
-            desc: "Order picked up and manifest generated. Dispatched towards linehaul hub."
+            active: d.step === 1,
+            time: "2 Days ago, 04:30 PM",
+            loc: d.origLoc,
+            desc: "Shipment generated and verified by merchant warehouse."
         });
 
-        // Day 1: In Transit
-        if (days >= 1) {
-            events.unshift({
-                active: days === 1,
-                time: formatDate(order.date, 1) + " • 02:15 AM",
-                loc: "National Transshipment Hub",
-                desc: "Processed through sorting facility. In transit to destination state."
-            });
-        }
-
-        // Day 2: Reached City Hub
-        if (days >= 2) {
-            events.unshift({
-                active: days === 2,
-                time: formatDate(order.date, 2) + " • 08:45 AM",
-                loc: `${order.city} Delivery Hub`,
-                desc: "Shipment bag received & verified at destination facility. Scheduled for final delivery."
-            });
-        }
-
-        // Day 3+: Out for Delivery
-        if (days >= 3) {
-            events.unshift({
-                active: true,
-                time: formatDate(order.date, 3) + " • 09:30 AM",
-                loc: `${order.city}`,
-                desc: "Out for delivery. Courier partner is heading to the delivery address."
-            });
-            riderCard.style.display = 'flex';
-        }
-
-        // Stepper और Progress Fill अपडेट करें
-        if (days === 0) {
-            step1.classList.add('active');
-            progressFill.style.width = '10%';
-            badge.innerText = 'DISPATCHED';
-        } else if (days === 1) {
-            step1.classList.add('active');
-            step2.classList.add('active');
-            progressFill.style.width = '40%';
-            badge.innerText = 'IN TRANSIT';
-        } else if (days === 2) {
-            step1.classList.add('active');
-            step2.classList.add('active');
-            step3.classList.add('active');
-            progressFill.style.width = '70%';
-            badge.innerText = 'AT LOCAL HUB';
-        } else {
-            step1.classList.add('active');
-            step2.classList.add('active');
-            step3.classList.add('active');
-            step4.classList.add('active');
-            progressFill.style.width = '100%';
-            badge.innerText = 'OUT FOR DELIVERY';
-        }
-
-        // HTML में इवेंट्स जोड़ें
         events.forEach(ev => {
-            timelineList.innerHTML += `
-                <div class="timeline-item ${ev.active ? 'active' : ''}">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-info">
-                        <div class="timeline-time">${ev.time}</div>
-                        <div class="timeline-loc">${ev.loc}</div>
-                        <div class="timeline-desc">${ev.desc}</div>
+            list.innerHTML += `
+                <div class="t-item ${ev.active ? 'active' : ''}">
+                    <div class="t-dot"></div>
+                    <div>
+                        <div class="t-time">${ev.time}</div>
+                        <div class="t-loc">${ev.loc}</div>
+                        <div class="t-desc">${ev.desc}</div>
                     </div>
                 </div>
             `;
         });
     }
 
-    function formatDate(baseDateStr, addDays) {
-        const d = new Date(baseDateStr);
-        d.setDate(d.getDate() + addDays);
-        return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    function getCoords(cityName) {
+        const low = cityName.toLowerCase();
+        for(let k in cityCoords) {
+            if(low.includes(k)) return cityCoords[k];
+        }
+        return [26.9124, 75.7873]; // Fallback to Jaipur
+    }
+
+    function renderMap(d) {
+        const destCoords = getCoords(d.dest);
+        const origCoords = getCoords(d.origLoc);
+
+        if(mapInstance) {
+            mapInstance.remove();
+        }
+
+        mapInstance = L.map('map').setView(destCoords, 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(mapInstance);
+
+        // Destination Marker
+        L.marker(destCoords).addTo(mapInstance)
+            .bindPopup(`<b>Destination: ${d.dest}</b><br>${d.recv}`).openPopup();
+
+        // If in Transit or Out for delivery, show live location point
+        let activePoint = destCoords;
+        if(d.step === 4) {
+            activePoint = [destCoords[0] + 0.015, destCoords[1] + 0.012];
+            L.marker(activePoint).addTo(mapInstance)
+                .bindPopup(`🛵 <b>Delivery Partner (${d.rider})</b><br>Near destination hub`);
+        }
+
+        // Draw Route Line
+        const polyline = L.polyline([origCoords, activePoint, destCoords], { color: '#2563eb', weight: 3, dashArray: '5, 8' }).addTo(mapInstance);
+        mapInstance.fitBounds(polyline.getBounds(), { padding: [30, 30] });
     }
 </script>
 
