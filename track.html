@@ -3,319 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Express Air Logistics - Consignment Tracking</title>
-    <!-- Leaflet CSS for Map -->
+    <title>Consignment Tracking - Saraswati Book Publication</title>
+    <!-- Leaflet Map CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --primary: #0f172a; --blue: #2563eb; --green: #16a34a; --text: #1e293b; --muted: #64748b; }
+        :root { --primary: #0f172a; --brand: #1e3a8a; --accent: #2563eb; --green: #15803d; --text: #1e293b; --muted: #64748b; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #f1f5f9; color: var(--text); padding-bottom: 50px; }
+        body { background: #f8fafc; color: var(--text); padding-bottom: 60px; }
 
-        /* Top Navbar */
-        .navbar { background: white; border-bottom: 1px solid #e2e8f0; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .logo { font-size: 18px; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
-        .logo span { background: #2563eb; color: white; padding: 2px 8px; border-radius: 4px; font-size: 13px; }
-        .ssl-badge { font-size: 11px; color: #16a34a; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        /* Publication Top Header */
+        .portal-header { background: white; border-bottom: 2px solid #e2e8f0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-logo { width: 36px; height: 36px; background: var(--brand); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; }
+        .brand-title { font-size: 16px; font-weight: 800; color: var(--brand); line-height: 1.1; }
+        .brand-sub { font-size: 11px; color: var(--muted); font-weight: 600; }
+        .security-badge { font-size: 11px; color: var(--green); font-weight: 700; background: #dcfce7; padding: 4px 10px; border-radius: 20px; }
 
-        .container { max-width: 580px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
 
-        /* Search Box */
-        .search-box { background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 15px; }
-        .search-input-wrap { display: flex; gap: 8px; margin-top: 8px; }
-        .search-input { flex: 1; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
-        .search-btn { background: var(--blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        /* Search Bar */
+        .search-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; }
+        .search-row { display: flex; gap: 8px; margin-top: 8px; }
+        .search-input { flex: 1; padding: 11px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; text-transform: uppercase; }
+        .search-btn { background: var(--brand); color: white; border: none; padding: 11px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-        /* Main Card */
-        .track-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); display: none; }
+        /* Main Tracking Card */
+        .main-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.06); display: none; }
+        .card-header { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); color: white; padding: 22px; }
+        .badge-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .pill { background: #22c55e; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; }
+        .consignment-no { font-size: 12px; opacity: 0.85; font-family: monospace; letter-spacing: 1px; }
+        .project-title { font-size: 17px; font-weight: 800; margin-top: 4px; line-height: 1.3; }
         
-        /* Header & Barcode */
-        .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 22px; position: relative; }
-        .status-pill { display: inline-block; background: #22c55e; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .barcode { font-family: monospace; font-size: 26px; letter-spacing: 5px; opacity: 0.35; margin-top: 6px; user-select: none; }
-        .product-title { font-size: 17px; font-weight: 700; margin-top: 10px; line-height: 1.3; }
+        /* Assignment Details Grid */
+        .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+        .meta-grid div span { color: var(--muted); display: block; margin-bottom: 2px; }
+        .meta-grid div b { color: var(--text); font-size: 13px; }
 
-        /* Package Details Table */
-        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
-        .spec-item b { color: var(--text); display: block; font-size: 13px; margin-top: 2px; }
+        /* Material Included Banner */
+        .kit-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 12px 18px; margin: 15px 20px; border-radius: 0 8px 8px 0; font-size: 13px; }
+        .kit-box b { color: var(--brand); display: block; margin-bottom: 2px; }
 
-        /* Map */
-        #map { height: 220px; width: 100%; border-bottom: 1px solid #e2e8f0; }
+        /* Leaflet Map */
+        #map { height: 210px; width: 100%; border-bottom: 1px solid #e2e8f0; }
 
         /* Stepper */
-        .stepper-container { padding: 20px; background: white; border-bottom: 1px solid #e2e8f0; }
+        .stepper-wrap { padding: 20px 20px 10px 20px; }
         .stepper { display: flex; justify-content: space-between; position: relative; }
-        .step-line { position: absolute; top: 14px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
-        .step-line-active { position: absolute; top: 14px; left: 10%; height: 3px; background: var(--blue); z-index: 1; transition: width 0.4s ease; }
+        .step-line { position: absolute; top: 13px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
+        .step-line-fill { position: absolute; top: 13px; left: 10%; height: 3px; background: var(--brand); z-index: 1; transition: width 0.4s; }
         .step { position: relative; z-index: 2; text-align: center; width: 25%; font-size: 11px; font-weight: 600; color: #94a3b8; }
-        .step-dot { width: 30px; height: 30px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 13px; font-weight: bold; }
-        .step.done .step-dot { background: var(--blue); color: white; }
-        .step.done { color: var(--blue); }
+        .step-dot { width: 28px; height: 28px; border-radius: 50%; background: #e2e8f0; color: #64748b; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 12px; font-weight: 800; }
+        .step.done .step-dot { background: var(--brand); color: white; }
+        .step.done { color: var(--brand); }
 
-        /* OTP Alert Card */
-        .otp-alert { background: #fefce8; border: 1.5px dashed #ca8a04; border-radius: 10px; padding: 14px; margin: 18px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .otp-number { font-size: 22px; font-weight: 900; color: #a16207; letter-spacing: 2px; }
+        /* Guidelines Notice */
+        .notice-card { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px; padding: 14px; margin: 15px 20px; font-size: 12px; color: #92400e; }
+        .notice-card b { display: block; font-size: 13px; margin-bottom: 4px; color: #78350f; }
 
-        /* Rider Info */
-        .rider-box { margin: 0 20px 18px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; }
-        .rider-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-
-        /* Timeline History */
+        /* Audit Timeline */
         .timeline { padding: 20px; }
-        .timeline-title { font-size: 14px; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; margin-bottom: 16px; }
-        .t-item { display: flex; gap: 16px; position: relative; margin-bottom: 22px; }
-        .t-item::after { content: ''; position: absolute; left: 8px; top: 22px; bottom: -22px; width: 2px; background: #e2e8f0; }
-        .t-item:last-child::after { display: none; }
-        .t-dot { width: 18px; height: 18px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; flex-shrink: 0; margin-top: 2px; }
-        .t-item.active .t-dot { background: var(--blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.4); }
-        .t-time { font-size: 11px; color: var(--muted); font-weight: 500; }
-        .t-loc { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; }
-        .t-desc { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
-
-        .btn-call { background: #2563eb; color: white; border: none; padding: 7px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 4px; }
+        .timeline-head { font-size: 13px; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .t-row { display: flex; gap: 16px; position: relative; margin-bottom: 20px; }
+        .t-row::after { content: ''; position: absolute; left: 8px; top: 20px; bottom: -20px; width: 2px; background: #e2e8f0; }
+        .t-row:last-child::after { display: none; }
+        .t-circle { width: 18px; height: 18px; border-radius: 50%; background: #cbd5e1; border: 3px solid white; box-shadow: 0 0 0 2px #cbd5e1; flex-shrink: 0; margin-top: 2px; }
+        .t-row.active .t-circle { background: var(--brand); box-shadow: 0 0 0 2px rgba(30,58,138,0.3); }
+        .t-time { font-size: 11px; color: var(--muted); }
+        .t-place { font-size: 13px; font-weight: 800; color: var(--text); margin-top: 2px; }
+        .t-note { font-size: 12px; color: #475569; margin-top: 2px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div class="logo">EXPRESS<span>AIR</span></div>
-    <div class="ssl-badge">🔒 256-bit Encrypted Portal</div>
+<div class="portal-header">
+    <div class="brand">
+        <div class="brand-logo">📖</div>
+        <div>
+            <div class="brand-title">Saraswati Book Publication</div>
+            <div class="brand-sub">National Educational Assignment Dispatch Portal</div>
+        </div>
+    </div>
+    <div class="security-badge">Verified Board</div>
 </div>
 
 <div class="container">
     <!-- Search Bar -->
-    <div class="search-box">
-        <div style="font-size: 12px; font-weight: bold; color: #64748b;">CONSIGNMENT TRACKING</div>
-        <div class="search-input-wrap">
-            <input type="text" id="trkInput" class="search-input" placeholder="Enter AWB Code (e.g. EXP-...)">
-            <button class="search-btn" onclick="fetchOrder()">Track</button>
+    <div class="search-card">
+        <div style="font-size: 12px; font-weight: 800; color: #64748b;">DISPATCH CONSIGNMENT STATUS</div>
+        <div class="search-row">
+            <input type="text" id="trackInput" class="search-input" placeholder="e.g. SBP-HW-849102">
+            <button class="search-btn" onclick="fetchShipment()">Track Kit</button>
         </div>
     </div>
 
     <!-- Tracking Result Main Card -->
-    <div class="track-card" id="trackCard">
-        <div class="header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="status-pill" id="badgeStatus">OUT FOR DELIVERY</span>
-                <span style="font-size: 11px; opacity: 0.8;" id="awbNumber">EXP-00000000</span>
+    <div class="main-card" id="mainCard">
+        <div class="card-header">
+            <div class="badge-row">
+                <span class="pill" id="badgePill">IN TRANSIT</span>
+                <span class="consignment-no" id="codeText">SBP-HW-000000</span>
             </div>
-            <div class="barcode">||||||||||||||||||||||||||||</div>
-            <div class="product-title" id="dispProduct">Item Name</div>
+            <div class="project-title" id="dispProject">Project Title Here</div>
             <div style="font-size: 12px; opacity: 0.9; margin-top: 6px;">
-                Recipient: <b id="dispRecipient">Rahul</b> • Delivery To: <span id="dispDest">City</span>
+                Assigned Candidate: <b id="dispCandidate">Rohan Kumar</b> (<span id="dispCandidateId">REG-0000</span>)
             </div>
         </div>
 
-        <!-- Specifications -->
-        <div class="specs-grid">
-            <div class="spec-item">
-                <span style="color: #64748b;">Payment Status</span>
-                <b id="dispPayment" style="color: #b91c1c;">Cash on Delivery</b>
+        <!-- Meta Grid -->
+        <div class="meta-grid">
+            <div>
+                <span>Destination Area</span>
+                <b id="dispDest">Patna, Bihar</b>
             </div>
-            <div class="spec-item">
-                <span style="color: #64748b;">Shipping Service</span>
-                <b>Priority Surface Air Express</b>
+            <div>
+                <span>Assigned Workload</span>
+                <b id="dispWork">95 Pages (Ruled)</b>
             </div>
-            <div class="spec-item">
-                <span style="color: #64748b;">Weight & Dimensions</span>
-                <b>0.680 kg (Standard Box)</b>
+            <div>
+                <span>Remuneration on Completion</span>
+                <b id="dispPay" style="color: var(--green);">₹8,500</b>
             </div>
-            <div class="spec-item">
-                <span style="color: #64748b;">Estimated Delivery</span>
-                <b style="color: #16a34a;">Today by 07:30 PM</b>
+            <div>
+                <span>Return Submission Window</span>
+                <b id="dispDeadline">15 Days Post Delivery</b>
             </div>
         </div>
 
-        <!-- Interactive Map -->
+        <!-- Material Included -->
+        <div class="kit-box">
+            <b>📦 Material Included in this Kit:</b>
+            <span id="dispKit">1x Master Copy (Printed Reference) + 1x Blank Evaluation Register + Guideline Slip</span>
+        </div>
+
+        <!-- Leaflet Map -->
         <div id="map"></div>
 
-        <!-- Stepper -->
-        <div class="stepper-container">
+        <!-- 4-Step Progress Bar -->
+        <div class="stepper-wrap">
             <div class="stepper">
                 <div class="step-line"></div>
-                <div class="step-line-active" id="stepLineActive" style="width: 75%;"></div>
+                <div class="step-line-fill" id="stepLineFill" style="width: 25%;"></div>
                 
-                <div class="step" id="s1"><div class="step-dot">✓</div>Booked</div>
-                <div class="step" id="s2"><div class="step-dot">✓</div>Transit</div>
-                <div class="step" id="s3"><div class="step-dot">✓</div>Local Hub</div>
-                <div class="step" id="s4"><div class="step-dot">✓</div>Out</div>
+                <div class="step" id="st1"><div class="step-dot">1</div>Manifested</div>
+                <div class="step" id="st2"><div class="step-dot">2</div>In Transit</div>
+                <div class="step" id="st3"><div class="step-dot">3</div>Local Hub</div>
+                <div class="step" id="st4"><div class="step-dot">4</div>Delivering</div>
             </div>
         </div>
 
-        <!-- OTP Box (If Out for Delivery) -->
-        <div class="otp-alert" id="otpBox">
-            <div>
-                <div style="font-size: 11px; font-weight: bold; color: #854d0e;">SAFE DELIVERY PASSCODE</div>
-                <div style="font-size: 12px; color: #713f12;">Share this OTP with driver at delivery</div>
-            </div>
-            <div class="otp-number" id="dispOtp">7492</div>
+        <!-- Official Writing Guidelines Notice -->
+        <div class="notice-card">
+            <b>⚠️ Candidate Handwriting Guidelines:</b>
+            1. केवल नीले (Blue) बॉल पेन का उपयोग करें।<br>
+            2. खाली कॉपी (Blank Register) को मोड़ें नहीं और न ही पन्ने फाड़ें।<br>
+            3. कार्य पूरा होने पर इसी पार्सल बॉक्स में पैक करके रिटर्न कोरियर करें।
         </div>
 
-        <!-- Delivery Rider (If Out for Delivery) -->
-        <div class="rider-box" id="riderBox">
-            <img src="https://i.pravatar.cc/120?img=11" class="rider-avatar" alt="Rider">
-            <div>
-                <div style="font-weight: bold; font-size: 14px;" id="dispRiderName">Vikram Singh</div>
-                <div style="font-size: 11px; color: #64748b;" id="dispRiderVeh">Hero Electric • RJ14-EQ-4012</div>
-                <a href="javascript:alert('Connecting secure call to delivery partner...')" class="btn-call">📞 Call Partner</a>
-            </div>
-        </div>
-
-        <!-- Audit Timeline -->
+        <!-- Movement Timeline -->
         <div class="timeline">
-            <div class="timeline-title">Audit Trail & Location History</div>
+            <div class="timeline-head">Consignment Movement Audit Trail</div>
             <div id="timelineContainer"></div>
         </div>
     </div>
 </div>
 
-<!-- Leaflet Map JS -->
+<!-- Leaflet Map Script -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    let mapInstance = null;
+    let map = null;
 
-    // भारतीय शहरों के डिफ़ॉल्ट कोऑर्डिनेट्स (मैप दिखाने के लिए)
-    const cityCoords = {
-        "mumbai": [19.0760, 72.8777],
+    const cityCoordinates = {
         "delhi": [28.7041, 77.1025],
         "jaipur": [26.9124, 75.7873],
-        "ahmedabad": [23.0225, 72.5714],
-        "bengaluru": [12.9716, 77.5946],
-        "kolkata": [22.5726, 88.3639],
+        "patna": [25.5941, 85.1376],
         "lucknow": [26.8467, 80.9462],
-        "pune": [18.5204, 73.8567],
-        "hyderabad": [17.3850, 78.4867],
+        "mumbai": [19.0760, 72.8777],
+        "kolkata": [22.5726, 88.3639],
+        "ahmedabad": [23.0225, 72.5714],
+        "bhopal": [23.2599, 77.4126],
         "chandigarh": [30.7333, 76.7794]
     };
 
     window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const encoded = urlParams.get('data');
-        const code = urlParams.get('code');
+        const params = new URLSearchParams(window.location.search);
+        const encoded = params.get('kit');
+        const code = params.get('code');
 
         if(encoded) {
             try {
                 const data = JSON.parse(decodeURIComponent(encoded));
-                document.getElementById('trkInput').value = data.trk;
+                document.getElementById('trackInput').value = data.trk;
                 renderPage(data);
             } catch(e) { console.error(e); }
         } else if(code) {
-            document.getElementById('trkInput').value = code;
-            fetchOrder();
+            document.getElementById('trackInput').value = code;
+            fetchShipment();
         }
     };
 
-    function fetchOrder() {
-        const trk = document.getElementById('trkInput').value.trim();
-        if(!trk) return alert("कृपया ट्रैकिंग कोड डालें!");
+    function fetchShipment() {
+        const code = document.getElementById('trackInput').value.trim();
+        if(!code) return alert("कृपया कंसाइनमेंट / ट्रैकिंग नंबर दर्ज करें!");
 
-        const local = localStorage.getItem("TRACK_" + trk);
+        const local = localStorage.getItem("SBP_" + code);
         if(local) {
             renderPage(JSON.parse(local));
         } else {
-            alert("कूरियर नंबर रिकॉर्ड्स में नहीं मिला। कृपया कोड चेक करें।");
+            alert("यह कंसाइनमेंट नंबर रिकॉर्ड में नहीं मिला। कृपया कोड जांचें।");
         }
     }
 
     function renderPage(d) {
-        document.getElementById('trackCard').style.display = 'block';
-        document.getElementById('awbNumber').innerText = d.trk;
-        document.getElementById('dispProduct').innerText = d.prod;
-        document.getElementById('dispRecipient').innerText = d.recv;
-        document.getElementById('dispDest').innerText = d.dest;
-        document.getElementById('dispPayment').innerText = d.pay;
-        document.getElementById('dispOtp').innerText = d.otp || '5912';
-        document.getElementById('dispRiderName').innerText = (d.rider || "Vikram Singh") + " (Delivery Associate)";
-        document.getElementById('dispRiderVeh').innerText = d.riderVeh || "Hero Electric • RJ14-EQ-4012";
+        document.getElementById('mainCard').style.display = 'block';
+        document.getElementById('codeText').innerText = d.trk;
+        document.getElementById('dispProject').innerText = d.proj;
+        document.getElementById('dispCandidate').innerText = d.name;
+        document.getElementById('dispCandidateId').innerText = d.candId || 'REG-PENDING';
+        document.getElementById('dispDest').innerText = d.city;
+        document.getElementById('dispWork').innerText = d.work;
+        document.getElementById('dispPay').innerText = d.pay;
+        document.getElementById('dispDeadline').innerText = d.dead;
+        document.getElementById('dispKit').innerText = d.kit;
 
-        // Stepper और Status Pill
-        const s1 = document.getElementById('s1');
-        const s2 = document.getElementById('s2');
-        const s3 = document.getElementById('s3');
-        const s4 = document.getElementById('s4');
-        const stepLine = document.getElementById('stepLineActive');
-        const badge = document.getElementById('badgeStatus');
-        const otpBox = document.getElementById('otpBox');
-        const riderBox = document.getElementById('riderBox');
+        // Stepper Progress
+        const st1 = document.getElementById('st1');
+        const st2 = document.getElementById('st2');
+        const st3 = document.getElementById('st3');
+        const st4 = document.getElementById('st4');
+        const line = document.getElementById('stepLineFill');
+        const badge = document.getElementById('badgePill');
 
-        [s1, s2, s3, s4].forEach(s => s.classList.remove('done'));
-        otpBox.style.display = 'none';
-        riderBox.style.display = 'none';
+        [st1, st2, st3, st4].forEach(s => s.classList.remove('done'));
 
         if(d.step === 1) {
-            s1.classList.add('done');
-            stepLine.style.width = '10%';
-            badge.innerText = 'BOOKED & PICKED UP';
+            st1.classList.add('done');
+            line.style.width = '10%';
+            badge.innerText = 'DISPATCH MANIFESTED';
         } else if(d.step === 2) {
-            s1.classList.add('done'); s2.classList.add('done');
-            stepLine.style.width = '40%';
-            badge.innerText = 'IN TRANSIT';
+            st1.classList.add('done'); st2.classList.add('done');
+            line.style.width = '40%';
+            badge.innerText = 'IN TRANSIT (INTER-DISTRICT)';
         } else if(d.step === 3) {
-            s1.classList.add('done'); s2.classList.add('done'); s3.classList.add('done');
-            stepLine.style.width = '70%';
-            badge.innerText = 'AT LOCAL HUB';
+            st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done');
+            line.style.width = '70%';
+            badge.innerText = 'AT LOCAL SPEED POST HUB';
         } else if(d.step >= 4) {
-            s1.classList.add('done'); s2.classList.add('done'); s3.classList.add('done'); s4.classList.add('done');
-            stepLine.style.width = '100%';
-            badge.innerText = d.step === 5 ? 'DELIVERED' : 'OUT FOR DELIVERY';
-            if(d.step === 4) {
-                otpBox.style.display = 'flex';
-                riderBox.style.display = 'flex';
-            }
+            st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done'); st4.classList.add('done');
+            line.style.width = '100%';
+            badge.innerText = d.step === 5 ? 'DELIVERED TO CANDIDATE' : 'OUT FOR DELIVERY';
         }
 
-        // Timeline Build
         buildTimeline(d);
-
-        // Map Render
         renderMap(d);
     }
 
     function buildTimeline(d) {
-        const list = document.getElementById('timelineContainer');
-        list.innerHTML = "";
-
+        const box = document.getElementById('timelineContainer');
+        box.innerHTML = "";
         const events = [];
         const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
         if(d.step >= 4) {
             events.push({
                 active: true,
-                time: today + ", 08:45 AM",
+                time: today + ", 09:15 AM",
                 loc: d.currLoc,
-                desc: "Out for delivery with associate " + d.rider + ". Expected delivery by evening."
+                note: "Postal delivery executive out for doorstep delivery of official handwriting kit."
             });
         }
         if(d.step >= 3) {
             events.push({
                 active: d.step === 3,
-                time: today + ", 05:12 AM",
-                loc: d.dest + " Delivery Facility",
-                desc: "Consignment bag received and processed at final destination facility."
+                time: today + ", 05:40 AM",
+                loc: d.city + " Nodal Postal Facility",
+                note: "Consignment bag received and sorted for regional delivery."
             });
         }
         if(d.step >= 2) {
             events.push({
                 active: d.step === 2,
-                time: "Yesterday, 09:20 PM",
-                loc: d.currLoc.includes("Transit") ? d.currLoc : "Transshipment Sort Facility",
-                desc: "Package sorted and manifested in inter-city container transit."
+                time: "Yesterday, 08:30 PM",
+                loc: d.currLoc.includes("Transit") ? d.currLoc : "Inter-State Sorting Hub",
+                note: "Package verified & transferred into night express container linehaul."
             });
         }
         events.push({
             active: d.step === 1,
-            time: "2 Days ago, 04:30 PM",
+            time: "2 Days ago, 03:00 PM",
             loc: d.origLoc,
-            desc: "Shipment generated and verified by merchant warehouse."
+            note: "Assignment kit manifested, barcode sealed, and handed over to postal logistics."
         });
 
         events.forEach(ev => {
-            list.innerHTML += `
-                <div class="t-item ${ev.active ? 'active' : ''}">
-                    <div class="t-dot"></div>
+            box.innerHTML += `
+                <div class="t-row ${ev.active ? 'active' : ''}">
+                    <div class="t-circle"></div>
                     <div>
                         <div class="t-time">${ev.time}</div>
-                        <div class="t-loc">${ev.loc}</div>
-                        <div class="t-desc">${ev.desc}</div>
+                        <div class="t-place">${ev.loc}</div>
+                        <div class="t-note">${ev.note}</div>
                     </div>
                 </div>
             `;
@@ -323,41 +310,29 @@
     }
 
     function getCoords(cityName) {
-        const low = cityName.toLowerCase();
-        for(let k in cityCoords) {
-            if(low.includes(k)) return cityCoords[k];
+        const clean = cityName.toLowerCase();
+        for(let key in cityCoordinates) {
+            if(clean.includes(key)) return cityCoordinates[key];
         }
-        return [26.9124, 75.7873]; // Fallback to Jaipur
+        return [28.7041, 77.1025]; // Default Delhi
     }
 
     function renderMap(d) {
-        const destCoords = getCoords(d.dest);
-        const origCoords = getCoords(d.origLoc);
+        const destCoord = getCoords(d.city);
+        const origCoord = getCoords(d.origLoc);
 
-        if(mapInstance) {
-            mapInstance.remove();
-        }
+        if(map) map.remove();
 
-        mapInstance = L.map('map').setView(destCoords, 10);
+        map = L.map('map').setView(destCoord, 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
-        }).addTo(mapInstance);
+        }).addTo(map);
 
-        // Destination Marker
-        L.marker(destCoords).addTo(mapInstance)
-            .bindPopup(`<b>Destination: ${d.dest}</b><br>${d.recv}`).openPopup();
+        L.marker(origCoord).addTo(map).bindPopup(`<b>Origin:</b> Saraswati Press (${d.origLoc})`);
+        L.marker(destCoord).addTo(map).bindPopup(`<b>Candidate Destination:</b> ${d.city}<br>${d.name}`).openPopup();
 
-        // If in Transit or Out for delivery, show live location point
-        let activePoint = destCoords;
-        if(d.step === 4) {
-            activePoint = [destCoords[0] + 0.015, destCoords[1] + 0.012];
-            L.marker(activePoint).addTo(mapInstance)
-                .bindPopup(`🛵 <b>Delivery Partner (${d.rider})</b><br>Near destination hub`);
-        }
-
-        // Draw Route Line
-        const polyline = L.polyline([origCoords, activePoint, destCoords], { color: '#2563eb', weight: 3, dashArray: '5, 8' }).addTo(mapInstance);
-        mapInstance.fitBounds(polyline.getBounds(), { padding: [30, 30] });
+        const route = L.polyline([origCoord, destCoord], { color: '#1e3a8a', weight: 3, dashArray: '6, 8' }).addTo(map);
+        map.fitBounds(route.getBounds(), { padding: [35, 35] });
     }
 </script>
 
