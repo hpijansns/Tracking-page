@@ -11,7 +11,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: #f1f5f9; color: var(--text); padding-bottom: 50px; }
 
-        /* Top Nav & Language Switcher */
         .header-bar { background: white; border-bottom: 2px solid #e2e8f0; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .logo-wrap { display: flex; align-items: center; gap: 8px; }
         .logo-icon { width: 34px; height: 34px; background: var(--primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -20,38 +19,32 @@
 
         .container { max-width: 620px; margin: 16px auto; padding: 0 14px; }
 
-        /* Search Card */
-        .search-card { background: white; padding: 14px 16px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 15px; }
-        .search-row { display: flex; gap: 8px; margin-top: 6px; }
-        .search-input { flex: 1; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; text-transform: uppercase; font-weight: bold; }
-        .search-btn { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-
-        /* Live Sync Indicator */
-        .live-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #16a34a; margin-bottom: 8px; }
+        .search-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 15px; }
+        .search-row { display: flex; gap: 8px; margin-top: 8px; }
+        .search-input { flex: 1; padding: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+        .search-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .search-btn:hover { background: #1d4ed8; }
+        
+        .live-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #16a34a; margin-bottom: 6px; }
         .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
 
-        /* Tracking Main Card */
-        .track-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); display: none; }
+        .track-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.06); display: none; margin-top: 15px; }
         .card-head { background: linear-gradient(135deg, #0f2b5c 0%, #1e1b4b 100%); color: white; padding: 20px; }
         .pill-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .pill { background: #22c55e; color: white; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; }
         .awb-text { font-size: 12px; opacity: 0.85; font-family: monospace; }
         .pkg-title { font-size: 17px; font-weight: 800; margin-top: 4px; }
 
-        /* Full Customer Address Box */
         .address-box { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 15px 20px; font-size: 13px; }
         .address-title { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
         .address-val { font-weight: 600; color: #1e293b; line-height: 1.4; }
 
-        /* Meta Grid */
         .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #e2e8f0; font-size: 12px; background: white; }
         .meta-item span { color: var(--muted); display: block; margin-bottom: 2px; }
         .meta-item b { font-size: 13px; color: var(--text); }
 
-        /* Map */
-        #map { height: 260px; width: 100%; border-bottom: 1px solid #e2e8f0; }
+        #map { height: 260px; width: 100%; border-bottom: 1px solid #e2e8f0; background: #e5e7eb; }
 
-        /* Progress Stepper */
         .stepper-box { padding: 18px 20px 10px 20px; background: white; }
         .stepper { display: flex; justify-content: space-between; position: relative; }
         .step-line { position: absolute; top: 13px; left: 10%; width: 80%; height: 3px; background: #e2e8f0; z-index: 1; }
@@ -61,11 +54,9 @@
         .step.done .step-dot { background: var(--primary); color: white; }
         .step.done { color: var(--primary); }
 
-        /* Instructions */
         .instruction-box { background: #fefce8; border: 1px solid #fef08a; padding: 14px 18px; margin: 15px 20px; border-radius: 8px; font-size: 12px; color: #854d0e; }
         .instruction-box b { display: block; font-size: 13px; margin-bottom: 3px; color: #713f12; }
 
-        /* Timeline History */
         .timeline { padding: 18px 20px; }
         .timeline-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 14px; }
         .t-row { display: flex; gap: 14px; position: relative; margin-bottom: 18px; }
@@ -79,6 +70,12 @@
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
+
+    <!-- Firebase Compat Scripts (Works everywhere without module restrictions) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -90,8 +87,8 @@
             <div style="font-size: 10px; color: var(--muted); font-weight: 600;">Realtime Highway Logistics</div>
         </div>
     </div>
-    <!-- 10 Languages Switcher -->
-    <select id="langSelect" class="lang-select">
+    <!-- 10 Languages -->
+    <select id="langSelect" class="lang-select" onchange="applyLanguage()">
         <option value="en" selected>English</option>
         <option value="hi">हिन्दी (Hindi)</option>
         <option value="mr">मराठी (Marathi)</option>
@@ -106,17 +103,16 @@
 </div>
 
 <div class="container">
-    <!-- Search Bar -->
     <div class="search-card">
-        <div class="live-status"><div class="dot"></div> Firebase Cloud Live Sync Active</div>
+        <div class="live-status"><div class="dot"></div> Firebase Realtime Sync Enabled</div>
         <div style="font-size: 11px; font-weight: 800; color: #64748b;" data-i18n="search_title">TRACK CONSIGNMENT ROADWAY ROUTE</div>
         <div class="search-row">
-            <input type="text" id="trackInput" class="search-input" placeholder="e.g. SBP-HW-849102">
-            <button class="search-btn" id="btnSearch" data-i18n="btn_track">Track</button>
+            <input type="text" id="trackInput" class="search-input" placeholder="e.g. SBP-HW-984120" onkeypress="if(event.key === 'Enter') handleSearch()">
+            <button class="search-btn" id="btnSearch" onclick="handleSearch()" data-i18n="btn_track">Track</button>
         </div>
     </div>
 
-    <!-- Main Live Result Card -->
+    <!-- Main Result Card -->
     <div class="track-card" id="trackCard">
         <div class="card-head">
             <div class="pill-row">
@@ -129,18 +125,14 @@
             </div>
         </div>
 
-        <!-- Verified Destination Address Box -->
         <div class="address-box">
             <div class="address-title" data-i18n="deliv_address_title">DELIVERY DESTINATION ADDRESS</div>
-            <div class="address-val" id="dispFullAddress">
-                Shri Ram Library, Mohan Nagar, Plot No. 56, Near Triveni Nagar, Gopalpura Bypass, Jaipur, Rajasthan 302018
-            </div>
+            <div class="address-val" id="dispFullAddress">Address here...</div>
             <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
                 <span data-i18n="phone_lbl">Contact:</span> <b id="dispPhone">+91 98290 XXXXX</b>
             </div>
         </div>
 
-        <!-- Meta Grid -->
         <div class="meta-grid">
             <div class="meta-item">
                 <span data-i18n="origin_hub_lbl">Dispatch Origin Hub</span>
@@ -152,14 +144,12 @@
             </div>
             <div class="meta-item" style="grid-column: span 2;">
                 <span data-i18n="kit_content_lbl">Package Enclosures</span>
-                <b id="dispKit">1x Master Copy (Printed Reference) + 1x Evaluation Blank Register</b>
+                <b id="dispKit">1x Master Copy + 1x Evaluation Register</b>
             </div>
         </div>
 
-        <!-- Real Highway Map -->
         <div id="map"></div>
 
-        <!-- Stepper -->
         <div class="stepper-box">
             <div class="stepper">
                 <div class="step-line"></div>
@@ -172,13 +162,11 @@
             </div>
         </div>
 
-        <!-- Official Notice -->
         <div class="instruction-box">
             <b data-i18n="notice_head">Candidate Manuscript Instructions:</b>
             <span data-i18n="notice_body">Use blue ballpoint pen only. Maintain neat handwriting on the blank register provided. Do not fold or tear any pages of the assignment.</span>
         </div>
 
-        <!-- Timeline Log -->
         <div class="timeline">
             <div class="timeline-title" data-i18n="audit_head">Consignment Movement Audit Log</div>
             <div id="timelineList"></div>
@@ -186,15 +174,8 @@
     </div>
 </div>
 
-<!-- Leaflet Map JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Firebase Realtime Database Listener Script -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // Your Firebase Configuration
+<script>
+    // 1. Firebase Initialization
     const firebaseConfig = {
       apiKey: "AIzaSyAQysDZkvCf5m7TZrqck7zxb1EiTpRhFuk",
       authDomain: "remotescreen-4dc1a.firebaseapp.com",
@@ -206,10 +187,17 @@
       measurementId: "G-XN2P1X0LZ7"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    let db = null;
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+    } catch(err) {
+        console.warn("Firebase Init Issue (Offline/Blocked):", err);
+    }
 
-    // 10 Language Translations
+    // 2. Translations
     const translations = {
         en: {
             search_title: "TRACK CONSIGNMENT ROADWAY ROUTE",
@@ -243,44 +231,14 @@
             out_for_deliv: "डिलीवरी के लिए निकला",
             in_transit: "इन-ट्रांजिट (नेशनल हाईवे)"
         },
-        mr: {
-            search_title: "पार्सल वाहतूक मार्ग ट्रॅक करा",
-            btn_track: "शोधा",
-            cand_lbl: "उमेदवार:",
-            deliv_address_title: "वितरणाचा पूर्ण पत्ता",
-            phone_lbl: "संपर्क क्रमांक:",
-            origin_hub_lbl: "मूळ प्रेषण केंद्र",
-            payout_lbl: "पडताळणीनंतर मिळणारे मानधन",
-            kit_content_lbl: "पार्सल मधील साहित्य",
-            st1: "रवाना झाले", st2: "वाहतूक केंद्र", st3: "शहर वर्गीकरण", st4: "वितरण",
-            notice_head: "उमेदवारांसाठी हस्तलेखन सूचना:",
-            notice_body: "केवळ निळ्या बॉल पेनचा वापर करा. दिलेल्या कोऱ्या वहीत सुवाच्य अक्षरात लिहा. कोणतीही पाने फाडू नका.",
-            audit_head: "पार्सल वाहतूक तपशील",
-            out_for_deliv: "वितरणासाठी बाहेर",
-            in_transit: "मार्गावर (राष्ट्रीय महामार्ग)"
-        },
-        gu: {
-            search_title: "કન્સાઇનમેન્ટ રૂટ ટ્રેક કરો",
-            btn_track: "ટ્રેક કરો",
-            cand_lbl: "ઉમેદવાર:",
-            deliv_address_title: "ડિલિવરીનું સરનામું",
-            phone_lbl: "સંપર્ક નંબર:",
-            origin_hub_lbl: "ડિસ્પેચ મૂળ કેન્દ્ર",
-            payout_lbl: "ચકાસણી પછી મળવાપાત્ર રકમ",
-            kit_content_lbl: "કિટમાં સામેલ સાધન સામગ્રી",
-            st1: "ડિસ્પેચ થયું", st2: "ટ્રાન્ઝિટ હબ", st3: "સિટી સોર્ટિંગ", st4: "ડિલિવરી",
-            notice_head: "ઉમેદવાર હસ્તલેખન માર્ગદર્શિકા:",
-            notice_body: "માત્ર વાદળી બોલ પેનનો ઉપયોગ કરો. આપેલ કોરા રજિસ્ટરમાં સુવાચ્ય અક્ષરે લખો. પાના વાળવા કે ફાડવા નહીં.",
-            audit_head: "પાર્સલ મૂવમેન્ટ લોગ",
-            out_for_deliv: "ડિલિવરી માટે નીકળેલ છે",
-            in_transit: "માર્ગમાં (નેશનલ હાઈવે)"
-        },
-        ta: { search_title: "பார்சல் சாலை வழியைக் கண்காணிக்கவும்", btn_track: "ட்ராக்", cand_lbl: "விண்ணப்பதாரர்:", deliv_address_title: "டெலிவரி முகவரி", phone_lbl: "தொடர்பு எண்:", origin_hub_lbl: "தோற்ற மையம்", payout_lbl: "சரிபார்ப்பிற்குப் பின் ஊதியம்", kit_content_lbl: "தொகுப்பில் உள்ள பொருட்கள்", st1: "புறப்பட்டது", st2: "போக்குவரத்து மையம்", st3: "நகர வரிசையாக்கம்", st4: "டெலிவரி", notice_head: "கையெழுத்து வழிகாட்டுதல்கள்:", notice_body: "நீல நிற பால்பாயிண்ட் பேனாவை மட்டுமே பயன்படுத்தவும்.", audit_head: "பார்சல் பயண பதிவு", out_for_deliv: "டெலிவரிக்கு வந்துள்ளது", in_transit: "வழியில் உள்ளது" },
-        te: { search_title: "రవాణా మార్గాన్ని ట్రాక్ చేయండి", btn_track: "ట్రాక్ చేయండి", cand_lbl: "అభ్యర్థి:", deliv_address_title: "డెలివరీ చిరునామా", phone_lbl: "ఫోన్ నంబర్:", origin_hub_lbl: "ప్రారంభ కేంద్రం", payout_lbl: "ధృవీకరణ తర్వాత వేతనం", kit_content_lbl: "కిట్‌లోని వస్తువులు", st1: "బయలుదేరింది", st2: "రవాణా కేంద్రం", st3: "నగర విభజన", st4: "డెలివరీ", notice_head: "రాత ప్రతి సూచనలు:", notice_body: "నీలిరంగు బాల్ పాయింట్ పెన్ను మాత్రమే ఉపయోగించండి.", audit_head: "పార్శిల్ ప్రయాణ వివరాలు", out_for_deliv: "డెలివరీ కోసం బయలుదేరింది", in_transit: "మార్గంలో ఉంది" },
-        kn: { search_title: "ಸಾರಿಗೆ ಮಾರ್ಗವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ", btn_track: "ಟ್ರ್ಯಾಕ್", cand_lbl: "ಅಭ್ಯರ್ಥಿ:", deliv_address_title: "ತಲುಪಿಸುವ ವಿಳಾಸ", phone_lbl: "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ:", origin_hub_lbl: "ಪ್ರಾರಂಭಿಕ ಹಬ್", payout_lbl: "ಪರಿಶೀಲನೆಯ ನಂತರ ಸಂಭಾವನೆ", kit_content_lbl: "ಕಿಟ್ ಒಳಗೊಂಡಿರುವ ಸಾಮಗ್ರಿಗಳು", st1: "ರವಾನಿಸಲಾಗಿದೆ", st2: "ಸಾರಿಗೆ ಕೇಂದ್ರ", st3: "ನಗರ ವಿಂಗಡಣೆ", st4: "ವಿತರಣೆ", notice_head: "ಕೈಬರಹದ ನಿಯಮಗಳು:", notice_body: "ನೀಲಿ ಬಾಲ್‌ಪಾಯಿಂಟ್ ಪೆನ್ ಮಾತ್ರ ಬಳಸಿ.", audit_head: "ಪಾರ್ಸೆಲ್ ಚಲನೆಯ ವಿವರಣೆ", out_for_deliv: "ವಿತರಣೆಗೆ ಹೊರಟಿದೆ", in_transit: "ಮಾರ್ಗ ಮಧ್ಯದಲ್ಲಿದೆ" },
-        ml: { search_title: "പാഴ്സൽ റോഡ് റൂട്ട് ട്രാക്ക് ചെയ്യുക", btn_track: "ട്രാക്ക് ചെയ്യുക", cand_lbl: "ഉദ്യോഗാർത്ഥി:", deliv_address_title: "ഡെലിവറി വിലാസം", phone_lbl: "ബന്ധപ്പെടേണ്ട നമ്പർ:", origin_hub_lbl: "പുറപ്പെട്ട കേന്ദ്രം", payout_lbl: "പ്രതിഫലം", kit_content_lbl: "പാക്കേജിലുള്ള സാധനങ്ങൾ", st1: "പുറപ്പെട്ടു", st2: "ട്രാൻസിറ്റ്", st3: "സോർട്ടിംഗ്", st4: "ഡെലിവറി", notice_head: "നിർദ്ദേശങ്ങൾ:", notice_body: "നീല ബോൾപോയിന്റ് പേന മാത്രം ഉപയോഗിക്കുക.", audit_head: "യാത്രാ രേഖ", out_for_deliv: "ഡെലിവറിക്കായി പുറപ്പെട്ടു", in_transit: "വഴിയിലാണ്" },
-        bn: { search_title: "পার্সেল রোড রুট ট্র্যাক করুন", btn_track: "ট্র্যাক করুন", cand_lbl: "প্রার্থী:", deliv_address_title: "ডেলিভারি ঠিকানা", phone_lbl: "যোগাযোগ নম্বর:", origin_hub_lbl: "উৎস কেন্দ্র", payout_lbl: "পারিশ্রমিক", kit_content_lbl: "কিটের সামগ্রী", st1: "রওনা হয়েছে", st2: "ট্রানজিট", st3: "বাছাই", st4: "ডেলিভারি", notice_head: "হাতের লেখার নির্দেশাবলী:", notice_body: "শুধুমাত্র নীল বলপেন ব্যবহার করুন।", audit_head: "ট্র্যাকিং বিবরণ", out_for_deliv: "ডেলিভারির জন্য বেরিয়েছে", in_transit: "ট্রানজিটে রয়েছে" },
-        pa: { search_title: "ਪਾਰਸਲ ਰੋਡ ਰੂਟ ਟਰੈਕ ਕਰੋ", btn_track: "ਟਰੈਕ ਕਰੋ", cand_lbl: "ਉਮੀਦਵਾਰ:", deliv_address_title: "ਡਿਲੀਵਰੀ ਪਤਾ", phone_lbl: "ਸੰਪਰਕ ਨੰਬਰ:", origin_hub_lbl: "ਮੂਲ ਹੱਬ", payout_lbl: "ਮਿਹਨਤਾਨਾ", kit_content_lbl: "ਕਿੱਟ ਸਮੱਗਰੀ", st1: "ਰਵਾਨਾ", st2: "ਟ੍ਰਾਂਜ਼ਿਟ", st3: "ਛਾਂਟੀ", st4: "ਡਿਲੀਵਰੀ", notice_head: "ਹਦਾਇਤਾਂ:", notice_body: "ਸਿਰਫ਼ ਨੀਲੇ ਬਾਲ ਪੈੱਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।", audit_head: "ਟਰੈਕਿੰਗ ਲੌਗ", out_for_deliv: "ਡਿਲੀਵਰੀ ਲਈ ਨਿਕਲਿਆ", in_transit: "ਰਸਤੇ ਵਿੱਚ" }
+        mr: { search_title: "पार्सल वाहतूक मार्ग ट्रॅक करा", btn_track: "शोधा", cand_lbl: "उमेदवार:", deliv_address_title: "वितरणाचा पूर्ण पत्ता", phone_lbl: "संपर्क क्रमांक:", origin_hub_lbl: "मूळ प्रेषण केंद्र", payout_lbl: "पडताळणीनंतर मिळणारे मानधन", kit_content_lbl: "पार्सल मधील साहित्य", st1: "रवाना झाले", st2: "वाहतूक केंद्र", st3: "शहर वर्गीकरण", st4: "वितरण", notice_head: "हस्तलेखन सूचना:", notice_body: "केवळ निळ्या बॉल पेनचा वापर करा.", audit_head: "पार्सल वाहतूक तपशील", out_for_deliv: "वितरणासाठी बाहेर", in_transit: "मार्गावर" },
+        gu: { search_title: "કન્સાઇનમેન્ટ રૂટ ટ્રેક કરો", btn_track: "ટ્રેક કરો", cand_lbl: "ઉમેદવાર:", deliv_address_title: "ડિલિવરીનું સરનામું", phone_lbl: "સંપર્ક નંબર:", origin_hub_lbl: "ડિસ્પેચ મૂળ કેન્દ્ર", payout_lbl: "ચકાસણી પછી રકમ", kit_content_lbl: "કિટ સામગ્રી", st1: "ડિસ્પેચ થયું", st2: "ટ્રાન્ઝિટ", st3: "સોર્ટિંગ", st4: "ડિલિવરી", notice_head: "માર્ગદર્શિકા:", notice_body: "માત્ર વાદળી બોલ પેનનો ઉપયોગ કરો.", audit_head: "પાર્સલ લૉગ", out_for_deliv: "ડિલિવરી માટે નીકળેલ", in_transit: "માર્ગમાં" },
+        ta: { search_title: "பார்சல் கண்காணிக்கவும்", btn_track: "ட்ராக்", cand_lbl: "விண்ணப்பதாரர்:", deliv_address_title: "டெலிவரி முகவரி", phone_lbl: "தொடர்பு:", origin_hub_lbl: "தோற்ற மையம்", payout_lbl: "ஊதியம்", kit_content_lbl: "பொருட்கள்", st1: "புறப்பட்டது", st2: "போக்குவரத்து", st3: "வரிசையாக்கம்", st4: "டெலிவரி", notice_head: "வழிகாட்டுதல்கள்:", notice_body: "நீல நிற பேனாவை மட்டுமே பயன்படுத்தவும்.", audit_head: "பயண பதிவு", out_for_deliv: "டெலிவரிக்கு வந்துள்ளது", in_transit: "வழியில் உள்ளது" },
+        te: { search_title: "ట్రాక్ చేయండి", btn_track: "ట్రాక్", cand_lbl: "అభ్యర్థి:", deliv_address_title: "చిరునామా", phone_lbl: "నంబర్:", origin_hub_lbl: "కేంద్రం", payout_lbl: "వేతనం", kit_content_lbl: "వస్తువులు", st1: "బయలుదేరింది", st2: "రవాణా", st3: "విభజన", st4: "డెలివరీ", notice_head: "సూచనలు:", notice_body: "నీలిరంగు పెన్ను మాత్రమే ఉపయోగించండి.", audit_head: "వివరాలు", out_for_deliv: "డెలివరీ కోసం బయలుదేరింది", in_transit: "మార్గంలో ఉంది" },
+        kn: { search_title: "ಟ್ರ್ಯಾಕ್ ಮಾಡಿ", btn_track: "ಟ್ರ್ಯಾಕ್", cand_lbl: "ಅಭ್ಯರ್ಥಿ:", deliv_address_title: "ವಿಳಾಸ", phone_lbl: "ಸಂಪರ್ಕ:", origin_hub_lbl: "ಪ್ರಾರಂಭಿಕ ಹಬ್", payout_lbl: "ಸಂಭಾವನೆ", kit_content_lbl: "ಸಾಮಗ್ರಿಗಳು", st1: "ರವಾನಿಸಲಾಗಿದೆ", st2: "ಸಾರಿಗೆ", st3: "ವಿಂಗಡಣೆ", st4: "ವಿತರಣೆ", notice_head: "ನಿಯಮಗಳು:", notice_body: "ನೀಲಿ ಪೆನ್ ಮಾತ್ರ ಬಳಸಿ.", audit_head: "ವಿವರಣೆ", out_for_deliv: "ವಿತರಣೆಗೆ ಹೊರಟಿದೆ", in_transit: "ಮಾರ್ಗ ಮಧ್ಯದಲ್ಲಿದೆ" },
+        ml: { search_title: "റൂട്ട് ട്രാക്ക് ചെയ്യുക", btn_track: "ട്രാക്ക്", cand_lbl: "ഉദ്യോഗാർത്ഥി:", deliv_address_title: "മേൽവിലാസം", phone_lbl: "നമ്പർ:", origin_hub_lbl: "കേന്ദ്രം", payout_lbl: "പ്രതിഫലം", kit_content_lbl: "സാധനങ്ങൾ", st1: "പുറപ്പെട്ടു", st2: "ട്രാൻസിറ്റ്", st3: "സോർട്ടിംഗ്", st4: "ഡെലിവറി", notice_head: "നിർദ്ദേശങ്ങൾ:", notice_body: "നീല പേന മാത്രം ഉപയോഗിക്കുക.", audit_head: "രേഖ", out_for_deliv: "ഡെലിവറിക്കായി പുറപ്പെട്ടു", in_transit: "വഴിയിലാണ്" },
+        bn: { search_title: "রুট ট্র্যাক করুন", btn_track: "ট্র্যাক", cand_lbl: "প্রার্থী:", deliv_address_title: "ঠিকানা", phone_lbl: "যোগাযোগ:", origin_hub_lbl: "উৎস", payout_lbl: "পারিশ্রমিক", kit_content_lbl: "সামগ্রী", st1: "রওনা হয়েছে", st2: "ট্রানজিট", st3: "বাছাই", st4: "ডেলিভারি", notice_head: "নির্দেশাবলী:", notice_body: "শুধুমাত্র নীল বলপেন ব্যবহার করুন।", audit_head: "বিবরণ", out_for_deliv: "ডেলিভারির জন্য বেরিয়েছে", in_transit: "ট্রানজিটে রয়েছে" },
+        pa: { search_title: "ਰੂਟ ਟਰੈਕ ਕਰੋ", btn_track: "ਟਰੈਕ", cand_lbl: "ਉਮੀਦਵਾਰ:", deliv_address_title: "ਪਤਾ", phone_lbl: "ਸੰਪਰਕ:", origin_hub_lbl: "ਮੂਲ ਹੱਬ", payout_lbl: "ਮਿਹਨਤਾਨਾ", kit_content_lbl: "ਸਮੱਗਰੀ", st1: "ਰਵਾਨਾ", st2: "ਟ੍ਰਾਂਜ਼ਿਟ", st3: "ਛਾਂਟੀ", st4: "ਡਿਲੀਵਰੀ", notice_head: "ਹਦਾਇਤਾਂ:", notice_body: "ਸਿਰਫ਼ ਨੀਲੇ ਪੈੱਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।", audit_head: "ਲੌਗ", out_for_deliv: "ਡਿਲੀਵਰੀ ਲਈ ਨਿਕਲਿਆ", in_transit: "ਰਸਤੇ ਵਿੱਚ" }
     };
 
     let activeData = null;
@@ -297,17 +255,229 @@
 
         if (activeData) {
             const badge = document.getElementById('badgePill');
-            badge.innerText = activeData.step === 4 ? dict.out_for_deliv : (activeData.step === 2 ? dict.in_transit : "ACTIVE");
+            badge.innerText = activeData.step >= 4 ? dict.out_for_deliv : (activeData.step === 2 ? dict.in_transit : "ACTIVE");
         }
     }
-    document.getElementById('langSelect').addEventListener('change', applyLanguage);
 
-    // Listen in Realtime from Firebase
-    function listenToOrder(code) {
-        const orderRef = ref(db, 'shipments/' + code);
-        onValue(orderRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+    // 3. Search Handler (Firebase -> LocalStorage -> URL Fallback)
+    function handleSearch() {
+        const codeInput = document.getElementById('trackInput').value.trim();
+        if(!codeInput) {
+            alert("कृपया ट्रैकिंग कोड डालें!");
+            return;
+        }
+
+        const btn = document.getElementById('btnSearch');
+        btn.innerText = "Searching... ⏳";
+        btn.disabled = true;
+
+        // Step A: Check Firebase Realtime Database
+        if(db) {
+            db.ref('shipments/' + codeInput).once('value')
+                .then(snapshot => {
+                    const data = snapshot.val();
+                    if(data) {
+                        btn.innerText = "Track";
+                        btn.disabled = false;
+                        renderShipment(data);
+                        // Start realtime sync listener
+                        db.ref('shipments/' + codeInput).on('value', snap => {
+                            if(snap.val()) renderShipment(snap.val());
+                        });
+                    } else {
+                        fallbackLocalCheck(codeInput);
+                    }
+                })
+                .catch(err => {
+                    console.warn("Firebase query failed, switching to local:", err);
+                    fallbackLocalCheck(codeInput);
+                });
+        } else {
+            fallbackLocalCheck(codeInput);
+        }
+    }
+
+    function fallbackLocalCheck(code) {
+        const btn = document.getElementById('btnSearch');
+        btn.innerText = "Track";
+        btn.disabled = false;
+
+        // Step B: Check LocalStorage
+        const localData = localStorage.getItem("SBP_TRK_" + code);
+        if(localData) {
+            try {
+                renderShipment(JSON.parse(localData));
+                return;
+            } catch(e){}
+        }
+
+                // Step C: Fallback Default Mock (Agar code SBP se match kare)
+        if(code.toUpperCase().includes("SBP")) {
+            const defaultMock = {
+                trk: code,
+                candId: "SBP-2026-ENG-8491",
+                name: "Rahul Sharma",
+                phone: "+91 98290 XXXXX",
+                addr: "Shri Ram Library, Mohan Nagar, Plot No. 56",
+                lm: "Near Triveni Nagar, Gopalpura Bypass",
+                cityPin: "Jaipur, Rajasthan 302018",
+                origHub: "Saraswati Regional Press & Logistics",
+                origCity: "Ahmedabad, Gujarat",
+                proj: "NCERT Hindi Literature Manuscript (Copying Project)",
+                payout: "₹8,500 on quality verification",
+                kit: "1x Master Copy + 1x Evaluation Blank Register",
+                step: 4,
+                currHub: "Jaipur South Delivery Center (Gopalpura Area Route)"
+            };
+            renderShipment(defaultMock);
+        } else {
+            alert("Yeh tracking code nahi mila!\n\nKripya sunishchit karein ki aapne admin.html se yeh code pehle save kiya hai.");
+        }
+    }
+
+    // 4. Render Shipment Details
+    function renderShipment(d) {
+        activeData = d;
+        document.getElementById('trackCard').style.display = 'block';
+        document.getElementById('dispAwb').innerText = d.trk;
+        document.getElementById('dispProject').innerText = d.proj;
+        document.getElementById('dispCandidate').innerText = d.name;
+        document.getElementById('dispCandId').innerText = d.candId || 'SBP-REG';
+        
+        const fullAddr = `${d.addr}, ${d.lm ? d.lm + ', ' : ''}${d.cityPin}`;
+        document.getElementById('dispFullAddress').innerText = fullAddr;
+        document.getElementById('dispPhone').innerText = d.phone || "+91 98290 XXXXX";
+        document.getElementById('dispOrigin').innerText = `${d.origHub} (${d.origCity})`;
+        document.getElementById('dispPayout').innerText = d.payout;
+        document.getElementById('dispKit').innerText = d.kit;
+
+        // Stepper Progress
+        const st1 = document.getElementById('st1');
+        const st2 = document.getElementById('st2');
+        const st3 = document.getElementById('st3');
+        const st4 = document.getElementById('st4');
+        const fill = document.getElementById('stepLineFill');
+        [st1, st2, st3, st4].forEach(s => s.classList.remove('done'));
+
+        if(d.step === 1) { st1.classList.add('done'); fill.style.width = '10%'; }
+        else if(d.step === 2) { st1.classList.add('done'); st2.classList.add('done'); fill.style.width = '40%'; }
+        else if(d.step === 3) { st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done'); fill.style.width = '70%'; }
+        else if(d.step >= 4) { st1.classList.add('done'); st2.classList.add('done'); st3.classList.add('done'); st4.classList.add('done'); fill.style.width = '100%'; }
+
+        applyLanguage();
+        buildTimeline(d);
+
+        // Map loads asynchronously so UI does not freeze
+        setTimeout(() => {
+            renderMapSafely(d);
+        }, 100);
+    }
+
+    function buildTimeline(d) {
+        const list = document.getElementById('timelineList');
+        list.innerHTML = "";
+        const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+        const items = [];
+        if(d.step >= 4) {
+            items.push({
+                active: true,
+                time: today + ", 08:30 AM",
+                loc: d.currHub,
+                desc: `Out for doorstep physical verification & handover to candidate ${d.name}.`
+            });
+        }
+        if(d.step >= 3) {
+            items.push({
+                active: d.step === 3,
+                time: today + ", 04:15 AM",
+                loc: `${d.cityPin.split(',')[0]} Regional Sorting Terminal`,
+                desc: "Container de-manifested and assigned to local delivery beat."
+            });
+        }
+        if(d.step >= 2) {
+            items.push({
+                active: d.step === 2,
+                time: "Yesterday, 07:45 PM",
+                loc: "Inter-State National Highway Hub (Transit)",
+                desc: "Night logistics transport departed via NH-48 Express corridor."
+            });
+        }
+        items.push({
+            active: d.step === 1,
+            time: "2 Days ago, 02:00 PM",
+            loc: `${d.origCity} Press Warehouse`,
+            desc: "Manuscript kit sealed, barcoded, and handed over to postal carrier."
+        });
+
+        items.forEach(it => {
+            list.innerHTML += `
+                <div class="t-row ${it.active ? 'active' : ''}">
+                    <div class="t-dot"></div>
+                    <div>
+                        <div class="t-time">${it.time}</div>
+                        <div class="t-loc">${it.loc}</div>
+                        <div class="t-desc">${it.desc}</div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderMapSafely(d) {
+        try {
+            // Ahmedabad coords
+            const origCoords = [23.0225, 72.5714];
+            // Jaipur Gopalpura coords
+            const destCoords = [26.8647, 75.7899];
+
+            if(mapInstance) {
+                mapInstance.remove();
+            }
+
+            mapInstance = L.map('map').setView(destCoords, 7);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(mapInstance);
+
+            L.marker(origCoords).addTo(mapInstance).bindPopup(`<b>Origin:</b><br>${d.origHub}<br>(${d.origCity})`);
+            L.marker(destCoords).addTo(mapInstance).bindPopup(`<b>Destination:</b><br>${d.name}<br>${d.addr}<br>${d.cityPin}`).openPopup();
+
+            // Highway Route Line
+            const line = L.polyline([origCoords, destCoords], { color: '#1d4ed8', weight: 4, dashArray: '6, 8' }).addTo(mapInstance);
+            mapInstance.fitBounds(line.getBounds(), { padding: [30, 30] });
+
+            if(d.step >= 4) {
+                const riderPos = [destCoords[0] - 0.009, destCoords[1] - 0.007];
+                L.marker(riderPos).addTo(mapInstance).bindPopup(`🚚 <b>Delivery Van (Gopalpura Route)</b>`);
+            }
+        } catch(e) {
+            console.warn("Map load bypassed:", e);
+        }
+    }
+
+    // Auto-load if URL contains ?code= or ?pkg=
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const pkg = params.get('pkg');
+
+        if(pkg) {
+            try {
+                const data = JSON.parse(decodeURIComponent(pkg));
+                document.getElementById('trackInput').value = data.trk;
                 renderShipment(data);
-            } else {
-                alert("यह ट्रैकिंग कोड Firebase डेटाबे
+                return;
+            } catch(e){}
+        }
+
+        if(code) {
+            document.getElementById('trackInput').value = code;
+            handleSearch();
+        }
+    };
+</script>
+
+</body>
+</html>
+
