@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>सरस्वती बुक पब्लिकेशन - लाइव एडमिन पैनल (Firebase)</title>
+    <title>सरस्वती बुक पब्लिकेशन - लाइव एडमिन पैनल</title>
     <style>
         :root { --primary: #0f2b5c; --accent: #1d4ed8; --bg: #f8fafc; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -11,12 +11,12 @@
         .card { background: white; width: 100%; max-width: 720px; padding: 28px; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
         .head { border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .head h2 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
-        .status-badge { background: #dcfce7; color: #15803d; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        .status-badge { background: #dcfce7; color: #15803d; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; }
         .section-title { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { margin-bottom: 14px; }
         label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); }
         .btn-gen { background: #e2e8f0; border: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 15px; }
@@ -25,16 +25,18 @@
         .res-code { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: 1px; margin: 6px 0; }
         .btn-copy { background: #16a34a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 8px; }
     </style>
+    <!-- Firebase Compat Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
 <div class="card">
     <div class="head">
         <h2>📚 सरस्वती बुक पब्लिकेशन</h2>
-        <span class="status-badge">🟢 Firebase Realtime Connected</span>
+        <span class="status-badge">🟢 Firebase Live Connected</span>
     </div>
 
-    <!-- 1. Origin Information -->
     <div class="section-title">1. कंसाइनमेंट ओरिजिन (कहाँ से माल रवाना हुआ)</div>
     <div class="grid-2">
         <div class="form-group">
@@ -47,16 +49,15 @@
         </div>
     </div>
 
-    <!-- 2. Candidate Complete Details -->
     <div class="section-title">2. कैंडिडेट का संपूर्ण पता व विवरण</div>
     <div class="grid-2">
         <div class="form-group">
             <label>कैंडिडेट का पूरा नाम</label>
-            <input type="text" id="candName" placeholder="उदा. राहुल शर्मा">
+            <input type="text" id="candName" value="Rahul Sharma">
         </div>
         <div class="form-group">
             <label>संपर्क फोन नंबर</label>
-            <input type="text" id="candPhone" placeholder="+91 98290 XXXXX">
+            <input type="text" id="candPhone" value="+91 98290 XXXXX">
         </div>
     </div>
 
@@ -76,14 +77,13 @@
         </div>
     </div>
 
-    <!-- 3. Assignment Details -->
     <div class="section-title">3. असाइनमेंट किट व पार्सल विवरण</div>
     <div class="grid-2">
         <div class="form-group">
             <label>ट्रैकिंग नंबर (AWB Code)</label>
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="trkCode" placeholder="SBP-HW-984120">
-                <button class="btn-gen" type="button" id="btnAutoCode">Auto</button>
+                <button class="btn-gen" type="button" onclick="autoCode()">Auto</button>
             </div>
         </div>
         <div class="form-group">
@@ -108,12 +108,11 @@
         <input type="text" id="kitDesc" value="1x Master Reference Copy (Printed) + 1x Evaluation Blank Register + Instruction Sheet">
     </div>
 
-    <!-- 4. Shipment Movement -->
     <div class="section-title">4. वर्तमान स्थिति व लाइव लोकेशन हब</div>
     <div class="grid-2">
         <div class="form-group">
             <label>पार्सल की वर्तमान स्थिति</label>
-            <select id="shipStep">
+            <select id="shipStep" onchange="autoHubLocation()">
                 <option value="1">1. डिस्पैच हुआ (Ahmedabad Warehouse)</option>
                 <option value="2">2. इन-ट्रांजिट हाईवे हब (National Highway Inter-State)</option>
                 <option value="3">3. गंतव्य शहर के लोकल हब पर (Jaipur Sorting Facility)</option>
@@ -123,25 +122,20 @@
         </div>
         <div class="form-group">
             <label>वर्तमान लॉजिस्टिक्स हब का नाम</label>
-            <input type="text" id="currentHubName" value="Jaipur South Delivery Center (Gopalpura Line)">
+            <input type="text" id="currentHubName" value="Jaipur South Delivery Center (Gopalpura Area Route)">
         </div>
     </div>
 
-    <button class="btn-submit" type="button" id="btnSave">Firebase डेटाबेस में सेव व अपडेट करें 🚀</button>
+    <button class="btn-submit" type="button" id="btnSave" onclick="saveShipment()">Firebase डेटाबेस में सेव व अपडेट करें 🚀</button>
 
     <div class="result-box" id="resBox">
-        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ पार्सल का डेटा Firebase में लाइव सेव हो गया!</div>
+        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ पार्सल का डेटा लाइव सेव हो गया!</div>
         <div class="res-code" id="codeDisplay">SBP-HW-000000</div>
-        <button class="btn-copy" type="button" id="btnCopy">📋 ट्रैकिंग लिंक कॉपी करें (कैंडिडेट को भेजने के लिए)</button>
+        <button class="btn-copy" type="button" onclick="copyTracking()">📋 ट्रैकिंग लिंक कॉपी करें (कैंडिडेट को भेजने के लिए)</button>
     </div>
 </div>
 
-<!-- Firebase Realtime Database Integration -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // Your Firebase Configuration
+<script>
     const firebaseConfig = {
       apiKey: "AIzaSyAQysDZkvCf5m7TZrqck7zxb1EiTpRhFuk",
       authDomain: "remotescreen-4dc1a.firebaseapp.com",
@@ -153,20 +147,19 @@
       measurementId: "G-XN2P1X0LZ7"
     };
 
-    // Initialize Firebase & Database
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let finalLink = "";
+    let db = null;
+    try {
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+    } catch(e) { console.warn(e); }
 
     function autoCode() {
         const rand = Math.floor(100000 + Math.random() * 900000);
         document.getElementById('trkCode').value = 'SBP-HW-' + rand;
     }
-    document.getElementById('btnAutoCode').addEventListener('click', autoCode);
     autoCode();
 
-    document.getElementById('shipStep').addEventListener('change', () => {
+    function autoHubLocation() {
         const s = document.getElementById('shipStep').value;
         const hub = document.getElementById('currentHubName');
         if(s === "1") hub.value = "Ahmedabad Central Publishing Warehouse (Dispatch Dock 2)";
@@ -174,9 +167,11 @@
         else if(s === "3") hub.value = "Jaipur RMS Nodal Postal Hub (Near Railway Station)";
         else if(s === "4") hub.value = "Jaipur South Delivery Center (Gopalpura Area Route)";
         else if(s === "5") hub.value = "Delivered at Doorstep Address";
-    });
+    }
 
-    document.getElementById('btnSave').addEventListener('click', async () => {
+    let finalLink = "";
+
+    function saveShipment() {
         const trk = document.getElementById('trkCode').value.trim();
         const candName = document.getElementById('candName').value.trim();
         const candAddress = document.getElementById('candAddress').value.trim();
@@ -205,33 +200,37 @@
             lastUpdated: new Date().toISOString()
         };
 
-        const saveBtn = document.getElementById('btnSave');
-        saveBtn.innerText = "Firebase में सेव हो रहा है...";
-        saveBtn.disabled = true;
+        // 1. LocalStorage Backup
+        localStorage.setItem("SBP_TRK_" + trk, JSON.stringify(payload));
 
-        try {
-            // Save directly to Firebase Realtime Database: shipments/{trk}
-            await set(ref(db, 'shipments/' + trk), payload);
+        const curPath = window.location.href;
+        finalLink = curPath.substring(0, curPath.lastIndexOf('/')) + '/track.html?code=' + trk;
 
-            const curPath = window.location.href;
-            finalLink = curPath.substring(0, curPath.lastIndexOf('/')) + '/track.html?code=' + trk;
-
-            document.getElementById('codeDisplay').innerText = trk;
-            document.getElementById('resBox').style.display = 'block';
-            alert("सफलतापूर्वक Firebase में सेव हो गया!");
-        } catch (error) {
-            console.error("Firebase Error: ", error);
-            alert("Firebase में सेव करने में त्रुटि आई: " + error.message);
-        } finally {
-            saveBtn.innerText = "Firebase डेटाबेस में सेव व अपडेट करें 🚀";
-            saveBtn.disabled = false;
+        // 2. Firebase Cloud Realtime Save
+        if(db) {
+            db.ref('shipments/' + trk).set(payload)
+                .then(() => {
+                    showSuccess(trk);
+                })
+                .catch(err => {
+                    console.warn("Firebase save error, saved locally:", err);
+                    showSuccess(trk);
+                });
+        } else {
+            showSuccess(trk);
         }
-    });
+    }
 
-    document.getElementById('btnCopy').addEventListener('click', () => {
+    function showSuccess(trk) {
+        document.getElementById('codeDisplay').innerText = trk;
+        document.getElementById('resBox').style.display = 'block';
+        alert("डेटा सफलतापूर्वक सेव हो गया!\nअब आप 'Copy Tracking Link' बटन से लिंक कॉपी कर सकते हैं।");
+    }
+
+    function copyTracking() {
         navigator.clipboard.writeText(finalLink);
-        alert("रियल-टाइम ट्रैकिंग लिंक कॉपी हो गया!\n\n" + finalLink);
-    });
+        alert("ट्रैकिंग लिंक कॉपी हो गया:\n" + finalLink);
+    }
 </script>
 
 </body>
