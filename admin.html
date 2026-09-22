@@ -3,207 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courier Pro Admin - Custom Tracking Generator</title>
+    <title>Saraswati Book Publication - Dispatch Admin</title>
     <style>
-        :root { --primary: #0f172a; --accent: #2563eb; --bg: #f8fafc; }
+        :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f1f5f9; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--bg); padding: 20px; display: flex; justify-content: center; }
-        .admin-card { background: white; width: 100%; max-width: 650px; padding: 28px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        h2 { color: var(--primary); font-size: 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        body { background: var(--bg); padding: 25px 15px; display: flex; justify-content: center; }
+        .card { background: white; width: 100%; max-width: 680px; padding: 30px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
+        .title { color: var(--primary); font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .tag { background: #dbeafe; color: var(--primary); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+        .section-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { margin-bottom: 14px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
         input, select, textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-        .btn-gen { background: #e2e8f0; color: #1e293b; padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .btn-main { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
-        .btn-main:hover { background: #1d4ed8; }
+        .btn-gen { background: #e2e8f0; color: #1e293b; padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-main:hover { background: #172554; }
         
-        /* Presets */
-        .presets { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .preset-badge { background: #eff6ff; color: var(--accent); border: 1px solid #bfdbfe; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; font-weight: 600; }
-        .preset-badge:hover { background: #dbeafe; }
-
         .result-box { display: none; margin-top: 25px; background: #f0fdf4; border: 1.5px dashed #22c55e; padding: 20px; border-radius: 12px; }
         .code-display { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: 1.5px; margin: 5px 0; }
-        .share-btn { background: #16a34a; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .share-btn { background: #16a34a; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="admin-card">
-    <h2>🚚 Express Cargo Control Center</h2>
-    
-    <div style="margin-bottom: 15px;">
-        <label>⚡ Quick Prank Presets (तुरंत भरने के लिए क्लिक करें):</label>
-        <div class="presets">
-            <span class="preset-badge" onclick="loadPreset('iphone')">📱 iPhone 16 Pro Max</span>
-            <span class="preset-badge" onclick="loadPreset('ps5')">🎮 PlayStation 5 Disc</span>
-            <span class="preset-badge" onclick="loadPreset('sneakers')">👟 Nike Air Jordan 1</span>
-            <span class="preset-badge" onclick="loadPreset('gold')">💍 Tanishq Gold Ring</span>
+<div class="card">
+    <div class="header">
+        <div class="title">📚 Saraswati Book Publication</div>
+        <div class="tag">Internal Dispatch Manager</div>
+    </div>
+
+    <!-- 1. Candidate Details -->
+    <div class="section-label">1. Candidate & Project Information</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Consignment / Tracking No.</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="trkCode" placeholder="SBP-HW-849102">
+                <button class="btn-gen" onclick="generateCode()">Auto</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Candidate Enrollment ID</label>
+            <input type="text" id="candId" value="SBP-2026-REG-4891">
         </div>
     </div>
 
-    <div class="section-title">1. Basic Shipment Details</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Candidate Full Name</label>
+            <input type="text" id="candName" placeholder="e.g. Ramesh Kumar">
+        </div>
+        <div class="form-group">
+            <label>Destination City & State</label>
+            <input type="text" id="destCity" placeholder="e.g. Jaipur, Rajasthan">
+        </div>
+    </div>
+
     <div class="form-group">
-        <label>Tracking Number (AWB Code)</label>
-        <div style="display: flex; gap: 8px;">
-            <input type="text" id="trkCode" placeholder="EXP-89410291IN">
-            <button class="btn-gen" onclick="autoGenerateCode()">Random</button>
-        </div>
+        <label>Project / Manuscript Title</label>
+        <input type="text" id="projTitle" value="NCERT Hindi Literature Manuscript (Transcribe Project)">
     </div>
 
     <div class="grid-2">
         <div class="form-group">
-            <label>Product Name (सामान)</label>
-            <input type="text" id="prodName" placeholder="e.g. Apple iPhone 16 Pro (256 GB)">
+            <label>Assigned Workload</label>
+            <input type="text" id="workload" value="95 Pages (Single-side Ruled)">
         </div>
         <div class="form-group">
-            <label>Payment Method & Amount</label>
-            <select id="paymentType">
-                <option value="Prepaid (₹0 Due)">Prepaid (Paid Online - ₹0 Due)</option>
-                <option value="Cash on Delivery (₹48,990 Due)">Cash on Delivery (₹48,990 to collect) 😈</option>
-                <option value="Cash on Delivery (₹1,49,990 Due)">COD (₹1,49,990 to collect) 💀</option>
-            </select>
+            <label>Project Remuneration (मानदेय)</label>
+            <input type="text" id="payout" value="₹8,500 upon quality verification">
         </div>
     </div>
 
-    <div class="grid-2">
-        <div class="form-group">
-            <label>Receiver Name (दोस्त का नाम)</label>
-            <input type="text" id="recvName" placeholder="Rahul Sharma">
-        </div>
-        <div class="form-group">
-            <label>Destination City (दोस्त का शहर)</label>
-            <input type="text" id="destCity" placeholder="Jaipur, Rajasthan">
-        </div>
+    <!-- 2. Kit Details -->
+    <div class="section-label">2. Assignment Kit Material Specs</div>
+    <div class="form-group">
+        <label>Dispatched Kit Material</label>
+        <input type="text" id="kitDesc" value="1x Master Copy (Printed Reference) + 1x Blank Evaluation Register + Guideline Slip">
     </div>
 
-    <div class="section-title">2. Current Location & Delivery Status (जहाँ दिखाना है)</div>
-    
+    <!-- 3. Logistics & Current Status -->
+    <div class="section-label">3. Shipment Movement & Current Hub</div>
     <div class="grid-2">
         <div class="form-group">
-            <label>Current Status (कहाँ तक पहुँचा)</label>
-            <select id="statusStep" onchange="handleStatusChange()">
-                <option value="1">1. Picked Up (Warehouse)</option>
-                <option value="2">2. In Transit (बीच के रास्ते/हब में)</option>
-                <option value="3">3. At Local Hub (दोस्त के शहर का हब)</option>
-                <option value="4" selected>4. Out for Delivery (आज डिलीवरी होगी)</option>
+            <label>Current Status Stage</label>
+            <select id="statusStep" onchange="autoFillLocation()">
+                <option value="1">1. Dispatch Manifested (Publication Press)</option>
+                <option value="2">2. In Transit (Inter-District Postal Hub)</option>
+                <option value="3">3. Arrived at Destination Hub (City Center)</option>
+                <option value="4" selected>4. Out for Delivery (Postman Assigned)</option>
                 <option value="5">5. Delivered Successfully</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Current Location Text (लाइव लोकेशन नाम)</label>
-            <input type="text" id="currentLocName" placeholder="e.g. Jaipur North Hub / Ahmedabad Transit Hub">
+            <label>Current Logistics Hub Name</label>
+            <input type="text" id="currLoc" placeholder="e.g. Jaipur RMS Speed Post Hub">
         </div>
     </div>
 
     <div class="grid-2">
         <div class="form-group">
-            <label>Origin / Dispatch City (कहाँ से चला)</label>
-            <input type="text" id="originCity" value="Mumbai Central Warehouse">
+            <label>Dispatch Origin Hub</label>
+            <input type="text" id="origLoc" value="New Delhi Central Publishing Press">
         </div>
         <div class="form-group">
-            <label>Delivery OTP (दोस्त को दिखाने के लिए)</label>
-            <input type="text" id="deliveryOtp" value="7492">
+            <label>Submission Due Timeline</label>
+            <input type="text" id="deadline" value="15 Days from date of parcel delivery">
         </div>
     </div>
 
-    <div class="section-title">3. Delivery Agent Details (अगर Out for Delivery चुना है)</div>
-    <div class="grid-2">
-        <div class="form-group">
-            <label>Rider Name</label>
-            <input type="text" id="riderName" value="Vikram Singh">
-        </div>
-        <div class="form-group">
-            <label>Rider Vehicle & Phone</label>
-            <input type="text" id="riderVehicle" value="Hero Electric (RJ-14-EQ-4012) • 9829XXXXXX">
-        </div>
-    </div>
-
-    <button class="btn-main" onclick="generateAndSave()">Generate Live Tracking Link 🚀</button>
+    <button class="btn-main" onclick="createShipment()">Generate Candidate Tracking Link 🚀</button>
 
     <div class="result-box" id="resultBox">
-        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ Shipment Active & Ready to Track!</div>
-        <div class="code-display" id="resCode">EXP-00000000</div>
-        <button class="share-btn" onclick="copyLink()">📋 Copy Direct Link (दोस्त को WhatsApp पर भेजें)</button>
+        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ Assignment Kit Tracking Active!</div>
+        <div class="code-display" id="dispCode">SBP-HW-000000</div>
+        <button class="share-btn" onclick="copyTrackingUrl()">📋 Copy Tracking Link (कैंडिडेट को भेजने के लिए)</button>
     </div>
 </div>
 
 <script>
-    let finalShareUrl = "";
-
-    function autoGenerateCode() {
-        const rand = Math.floor(10000000 + Math.random() * 90000000);
-        document.getElementById('trkCode').value = 'EXP-' + rand + 'IN';
+    function generateCode() {
+        const rand = Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('trkCode').value = 'SBP-HW-' + rand;
     }
-    autoGenerateCode();
+    generateCode();
 
-    function handleStatusChange() {
+    function autoFillLocation() {
         const step = document.getElementById('statusStep').value;
-        const dest = document.getElementById('destCity').value || "Destination City";
-        const locInput = document.getElementById('currentLocName');
+        const city = document.getElementById('destCity').value || "Destination City";
+        const loc = document.getElementById('currLoc');
 
-        if(step === "1") locInput.value = "Mumbai Central Logistics Hub";
-        else if(step === "2") locInput.value = "National Highway Transshipment Hub (In-Transit)";
-        else if(step === "3") locInput.value = dest + " Primary Sorting Facility";
-        else if(step === "4") locInput.value = dest + " Local Hub (On delivery route)";
-        else if(step === "5") locInput.value = dest + " (Delivered to Doorstep)";
+        if(step === "1") loc.value = "New Delhi Central Publishing Facility (Dispatch Bay 4)";
+        else if(step === "2") loc.value = "National Transit Mail Sorting Hub";
+        else if(step === "3") loc.value = city + " Divisional Speed Post / Parcel Hub";
+        else if(step === "4") loc.value = city + " Local Delivery Center (On Delivery Route)";
+        else if(step === "5") loc.value = city + " (Delivered to Candidate)";
     }
 
-    function loadPreset(type) {
-        if(type === 'iphone') {
-            document.getElementById('prodName').value = "Apple iPhone 16 Pro Max 256GB (Desert Titanium)";
-            document.getElementById('paymentType').value = "Prepaid (₹0 Due)";
-        } else if(type === 'ps5') {
-            document.getElementById('prodName').value = "Sony PlayStation 5 Slim (Disc Edition) + Extra Controller";
-            document.getElementById('paymentType').value = "Cash on Delivery (₹48,990 Due)";
-        } else if(type === 'sneakers') {
-            document.getElementById('prodName').value = "Nike Air Jordan 1 Retro High OG (Chicago Edition)";
-            document.getElementById('paymentType').value = "Prepaid (₹0 Due)";
-        } else if(type === 'gold') {
-            document.getElementById('prodName').value = "Tanishq 22K Hallmarked Gold Solitaire Ring";
-            document.getElementById('paymentType').value = "Cash on Delivery (₹1,49,990 Due)";
-        }
-        handleStatusChange();
-    }
+    let readyLink = "";
 
-    function generateAndSave() {
+    function createShipment() {
         const data = {
             trk: document.getElementById('trkCode').value.trim(),
-            prod: document.getElementById('prodName').value.trim(),
-            pay: document.getElementById('paymentType').value,
-            recv: document.getElementById('recvName').value.trim(),
-            dest: document.getElementById('destCity').value.trim(),
+            candId: document.getElementById('candId').value.trim(),
+            name: document.getElementById('candName').value.trim(),
+            city: document.getElementById('destCity').value.trim(),
+            proj: document.getElementById('projTitle').value.trim(),
+            work: document.getElementById('workload').value.trim(),
+            pay: document.getElementById('payout').value.trim(),
+            kit: document.getElementById('kitDesc').value.trim(),
             step: parseInt(document.getElementById('statusStep').value),
-            currLoc: document.getElementById('currentLocName').value.trim(),
-            origLoc: document.getElementById('originCity').value.trim(),
-            otp: document.getElementById('deliveryOtp').value.trim(),
-            rider: document.getElementById('riderName').value.trim(),
-            riderVeh: document.getElementById('riderVehicle').value.trim()
+            currLoc: document.getElementById('currLoc').value.trim(),
+            origLoc: document.getElementById('origLoc').value.trim(),
+            dead: document.getElementById('deadline').value.trim()
         };
 
-        if(!data.trk || !data.prod || !data.recv || !data.dest) {
-            alert("कृपया सभी ज़रूरी डिटेल्स भरें!");
+        if(!data.trk || !data.name || !data.city) {
+            alert("कृपया नाम, शहर और ट्रैकिंग कोड भरें!");
             return;
         }
 
-        // 1. LocalStorage में स्टोर
-        localStorage.setItem("TRACK_" + data.trk, JSON.stringify(data));
+        // Local storage backup
+        localStorage.setItem("SBP_" + data.trk, JSON.stringify(data));
 
-        // 2. Base64 URL बनाना ताकि दोस्त को बिना डेटाबेस भी लाइव दिखे
+        // URL encode
         const encoded = encodeURIComponent(JSON.stringify(data));
-        const currentUrl = window.location.href;
-        finalShareUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/track.html?data=' + encoded;
+        const curUrl = window.location.href;
+        readyLink = curUrl.substring(0, curUrl.lastIndexOf('/')) + '/track.html?kit=' + encoded;
 
-        document.getElementById('resCode').innerText = data.trk;
+        document.getElementById('dispCode').innerText = data.trk;
         document.getElementById('resultBox').style.display = 'block';
     }
 
-    function copyLink() {
-        navigator.clipboard.writeText(finalShareUrl);
-        alert("ट्रैकिंग लिंक कॉपी हो गया! इसे अपने दोस्त को भेजें।");
+    function copyTrackingUrl() {
+        navigator.clipboard.writeText(readyLink);
+        alert("ट्रैकिंग लिंक कॉपी हो गया! अब इसे कैंडिडेट या दोस्त को भेजें।");
     }
 </script>
 
