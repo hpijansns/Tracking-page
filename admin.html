@@ -3,184 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saraswati Book Publication - Dispatch Admin</title>
+    <title>सरस्वती बुक पब्लिकेशन - डिस्पैच एडमिन पैनल</title>
     <style>
-        :root { --primary: #1e3a8a; --accent: #2563eb; --bg: #f1f5f9; }
+        :root { --primary: #0f2b5c; --accent: #1d4ed8; --bg: #f8fafc; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg); padding: 25px 15px; display: flex; justify-content: center; }
-        .card { background: white; width: 100%; max-width: 680px; padding: 30px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-        .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
-        .title { color: var(--primary); font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-        .tag { background: #dbeafe; color: var(--primary); font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
-        .section-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; }
+        .card { background: white; width: 100%; max-width: 720px; padding: 28px; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+        .head { border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .head h2 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
+        .tag { background: #dbeafe; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .section-title { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { margin-bottom: 14px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
-        input, select, textarea { width: 100%; padding: 11px 13px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-        .btn-gen { background: #e2e8f0; color: #1e293b; padding: 11px 14px; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap; }
-        .btn-main { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 15px; }
-        .btn-main:hover { background: #172554; }
-        
-        .result-box { display: none; margin-top: 25px; background: #f0fdf4; border: 1.5px dashed #22c55e; padding: 20px; border-radius: 12px; }
-        .code-display { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: 1.5px; margin: 5px 0; }
-        .share-btn { background: #16a34a; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); }
+        .btn-gen { background: #e2e8f0; border: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-submit:hover { background: #0a1f42; }
+        .result-box { display: none; margin-top: 20px; background: #f0fdf4; border: 1.5px dashed #22c55e; padding: 18px; border-radius: 10px; }
+        .res-code { font-size: 22px; font-weight: 800; color: #15803d; letter-spacing: 1px; margin: 6px 0; }
+        .btn-copy { background: #16a34a; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 8px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="header">
-        <div class="title">📚 Saraswati Book Publication</div>
-        <div class="tag">Internal Dispatch Manager</div>
+    <div class="head">
+        <h2>📚 सरस्वती बुक पब्लिकेशन</h2>
+        <span class="tag">कूरियर रूट मैनेजर</span>
     </div>
 
-    <!-- 1. Candidate Details -->
-    <div class="section-label">1. Candidate & Project Information</div>
+    <!-- 1. Origin Information -->
+    <div class="section-title">1. कंसाइनमेंट ओरिजिन (कहाँ से माल रवाना हुआ)</div>
     <div class="grid-2">
         <div class="form-group">
-            <label>Consignment / Tracking No.</label>
+            <label>ओरिजिन वेयरहाउस का नाम</label>
+            <input type="text" id="origHub" value="Saraswati Regional Press & Warehouse">
+        </div>
+        <div class="form-group">
+            <label>ओरिजिन शहर व राज्य (मैप रूट के लिए)</label>
+            <input type="text" id="origCity" value="Ahmedabad, Gujarat">
+        </div>
+    </div>
+
+    <!-- 2. Candidate Complete Details -->
+    <div class="section-title">2. कैंडिडेट का संपूर्ण पता व विवरण</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>कैंडिडेट का पूरा नाम</label>
+            <input type="text" id="candName" placeholder="उदा. राहुल शर्मा">
+        </div>
+        <div class="form-group">
+            <label>संपर्क फोन नंबर</label>
+            <input type="text" id="candPhone" placeholder="+91 98290 XXXXX">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>पूरा पता (गली / प्लॉट / लाइब्रेरी का नाम)</label>
+        <input type="text" id="candAddress" value="Shri Ram Library, Mohan Nagar, Plot No. 56">
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>नजदीकी लैंडमार्क</label>
+            <input type="text" id="candLandmark" value="Near Triveni Nagar, Gopalpura Bypass">
+        </div>
+        <div class="form-group">
+            <label>शहर, राज्य एवं पिनकोड</label>
+            <input type="text" id="candCityPin" value="Jaipur, Rajasthan 302018">
+        </div>
+    </div>
+
+    <!-- 3. Assignment Details -->
+    <div class="section-title">3. असाइनमेंट किट व पार्सल विवरण</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>ट्रैकिंग नंबर (AWB)</label>
             <div style="display: flex; gap: 8px;">
-                <input type="text" id="trkCode" placeholder="SBP-HW-849102">
-                <button class="btn-gen" onclick="generateCode()">Auto</button>
+                <input type="text" id="trkCode" placeholder="SBP-HW-984120">
+                <button class="btn-gen" onclick="autoCode()">Auto</button>
             </div>
         </div>
         <div class="form-group">
-            <label>Candidate Enrollment ID</label>
-            <input type="text" id="candId" value="SBP-2026-REG-4891">
+            <label>कैंडिडेट रोल / एनरोलमेंट नंबर</label>
+            <input type="text" id="candId" value="SBP-2026-ENG-8491">
         </div>
     </div>
 
     <div class="grid-2">
         <div class="form-group">
-            <label>Candidate Full Name</label>
-            <input type="text" id="candName" placeholder="e.g. Ramesh Kumar">
+            <label>प्रोजेक्ट टाइटल</label>
+            <input type="text" id="projTitle" value="NCERT Hindi Literature Manuscript (Copying Project)">
         </div>
         <div class="form-group">
-            <label>Destination City & State</label>
-            <input type="text" id="destCity" placeholder="e.g. Jaipur, Rajasthan">
+            <label>कार्य मानदेय (Remuneration Payout)</label>
+            <input type="text" id="payout" value="₹8,500 on quality verification">
         </div>
     </div>
 
     <div class="form-group">
-        <label>Project / Manuscript Title</label>
-        <input type="text" id="projTitle" value="NCERT Hindi Literature Manuscript (Transcribe Project)">
+        <label>किट में शामिल सामग्री (Kit Materials)</label>
+        <input type="text" id="kitDesc" value="1x Master Reference Copy (Printed) + 1x Evaluation Blank Register + Instruction Sheet">
     </div>
 
+    <!-- 4. Shipment Movement -->
+    <div class="section-title">4. वर्तमान स्थिति व लाइव लोकेशन हब</div>
     <div class="grid-2">
         <div class="form-group">
-            <label>Assigned Workload</label>
-            <input type="text" id="workload" value="95 Pages (Single-side Ruled)">
-        </div>
-        <div class="form-group">
-            <label>Project Remuneration (मानदेय)</label>
-            <input type="text" id="payout" value="₹8,500 upon quality verification">
-        </div>
-    </div>
-
-    <!-- 2. Kit Details -->
-    <div class="section-label">2. Assignment Kit Material Specs</div>
-    <div class="form-group">
-        <label>Dispatched Kit Material</label>
-        <input type="text" id="kitDesc" value="1x Master Copy (Printed Reference) + 1x Blank Evaluation Register + Guideline Slip">
-    </div>
-
-    <!-- 3. Logistics & Current Status -->
-    <div class="section-label">3. Shipment Movement & Current Hub</div>
-    <div class="grid-2">
-        <div class="form-group">
-            <label>Current Status Stage</label>
-            <select id="statusStep" onchange="autoFillLocation()">
-                <option value="1">1. Dispatch Manifested (Publication Press)</option>
-                <option value="2">2. In Transit (Inter-District Postal Hub)</option>
-                <option value="3">3. Arrived at Destination Hub (City Center)</option>
-                <option value="4" selected>4. Out for Delivery (Postman Assigned)</option>
-                <option value="5">5. Delivered Successfully</option>
+            <label>पार्सल की वर्तमान स्थिति</label>
+            <select id="shipStep" onchange="autoHubLocation()">
+                <option value="1">1. डिस्पैच हुआ (Ahmedabad Warehouse)</option>
+                <option value="2">2. इन-ट्रांजिट हाईवे हब (National Highway Inter-State)</option>
+                <option value="3">3. गंतव्य शहर के लोकल हब पर (Jaipur Sorting Facility)</option>
+                <option value="4" selected>4. डिलीवरी के लिए निकला (Out for Doorstep Delivery)</option>
+                <option value="5">5. सफलतापूर्वक डिलीवर हो चुका है</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Current Logistics Hub Name</label>
-            <input type="text" id="currLoc" placeholder="e.g. Jaipur RMS Speed Post Hub">
+            <label>वर्तमान लॉजिस्टिक्स हब का नाम</label>
+            <input type="text" id="currentHubName" value="Jaipur South Delivery Center (Gopalpura Line)">
         </div>
     </div>
 
-    <div class="grid-2">
-        <div class="form-group">
-            <label>Dispatch Origin Hub</label>
-            <input type="text" id="origLoc" value="New Delhi Central Publishing Press">
-        </div>
-        <div class="form-group">
-            <label>Submission Due Timeline</label>
-            <input type="text" id="deadline" value="15 Days from date of parcel delivery">
-        </div>
-    </div>
+    <button class="btn-submit" onclick="generateLink()">लाइव रूट ट्रैकिंग लिंक तैयार करें 🚀</button>
 
-    <button class="btn-main" onclick="createShipment()">Generate Candidate Tracking Link 🚀</button>
-
-    <div class="result-box" id="resultBox">
-        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ Assignment Kit Tracking Active!</div>
-        <div class="code-display" id="dispCode">SBP-HW-000000</div>
-        <button class="share-btn" onclick="copyTrackingUrl()">📋 Copy Tracking Link (कैंडिडेट को भेजने के लिए)</button>
+    <div class="result-box" id="resBox">
+        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ पार्सल का लाइव रूट डेटा सफलतापूर्वक तैयार है!</div>
+        <div class="res-code" id="codeDisplay">SBP-HW-000000</div>
+        <button class="btn-copy" onclick="copyTracking()">📋 ट्रैकिंग लिंक कॉपी करें (कैंडिडेट को भेजने के लिए)</button>
     </div>
 </div>
 
 <script>
-    function generateCode() {
+    function autoCode() {
         const rand = Math.floor(100000 + Math.random() * 900000);
         document.getElementById('trkCode').value = 'SBP-HW-' + rand;
     }
-    generateCode();
+    autoCode();
 
-    function autoFillLocation() {
-        const step = document.getElementById('statusStep').value;
-        const city = document.getElementById('destCity').value || "Destination City";
-        const loc = document.getElementById('currLoc');
-
-        if(step === "1") loc.value = "New Delhi Central Publishing Facility (Dispatch Bay 4)";
-        else if(step === "2") loc.value = "National Transit Mail Sorting Hub";
-        else if(step === "3") loc.value = city + " Divisional Speed Post / Parcel Hub";
-        else if(step === "4") loc.value = city + " Local Delivery Center (On Delivery Route)";
-        else if(step === "5") loc.value = city + " (Delivered to Candidate)";
+    function autoHubLocation() {
+        const s = document.getElementById('shipStep').value;
+        const hub = document.getElementById('currentHubName');
+        if(s === "1") hub.value = "Ahmedabad Central Publishing Warehouse (Dispatch Dock 2)";
+        else if(s === "2") hub.value = "NH48 Inter-State Transit Hub (Udaipur Sort Facility)";
+        else if(s === "3") hub.value = "Jaipur RMS Nodal Postal Hub (Near Railway Station)";
+        else if(s === "4") hub.value = "Jaipur South Delivery Center (Gopalpura Area Route)";
+        else if(s === "5") hub.value = "Delivered at Doorstep Address";
     }
 
-    let readyLink = "";
+    let trackUrl = "";
 
-    function createShipment() {
-        const data = {
+    function generateLink() {
+        const payload = {
             trk: document.getElementById('trkCode').value.trim(),
             candId: document.getElementById('candId').value.trim(),
             name: document.getElementById('candName').value.trim(),
-            city: document.getElementById('destCity').value.trim(),
+            phone: document.getElementById('candPhone').value.trim(),
+            addr: document.getElementById('candAddress').value.trim(),
+            lm: document.getElementById('candLandmark').value.trim(),
+            cityPin: document.getElementById('candCityPin').value.trim(),
+            origHub: document.getElementById('origHub').value.trim(),
+            origCity: document.getElementById('origCity').value.trim(),
             proj: document.getElementById('projTitle').value.trim(),
-            work: document.getElementById('workload').value.trim(),
-            pay: document.getElementById('payout').value.trim(),
+            payout: document.getElementById('payout').value.trim(),
             kit: document.getElementById('kitDesc').value.trim(),
-            step: parseInt(document.getElementById('statusStep').value),
-            currLoc: document.getElementById('currLoc').value.trim(),
-            origLoc: document.getElementById('origLoc').value.trim(),
-            dead: document.getElementById('deadline').value.trim()
+            step: parseInt(document.getElementById('shipStep').value),
+            currHub: document.getElementById('currentHubName').value.trim()
         };
 
-        if(!data.trk || !data.name || !data.city) {
-            alert("कृपया नाम, शहर और ट्रैकिंग कोड भरें!");
+        if(!payload.trk || !payload.name || !payload.addr || !payload.cityPin) {
+            alert("कृपया कैंडिडेट का नाम, पता, शहर और ट्रैकिंग नंबर अवश्य भरें!");
             return;
         }
 
-        // Local storage backup
-        localStorage.setItem("SBP_" + data.trk, JSON.stringify(data));
+        // Local storage cache
+        localStorage.setItem("SBP_TRK_" + payload.trk, JSON.stringify(payload));
 
         // URL encode
-        const encoded = encodeURIComponent(JSON.stringify(data));
-        const curUrl = window.location.href;
-        readyLink = curUrl.substring(0, curUrl.lastIndexOf('/')) + '/track.html?kit=' + encoded;
+        const encoded = encodeURIComponent(JSON.stringify(payload));
+        const curPath = window.location.href;
+        trackUrl = curPath.substring(0, curPath.lastIndexOf('/')) + '/track.html?pkg=' + encoded;
 
-        document.getElementById('dispCode').innerText = data.trk;
-        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('codeDisplay').innerText = payload.trk;
+        document.getElementById('resBox').style.display = 'block';
     }
 
-    function copyTrackingUrl() {
-        navigator.clipboard.writeText(readyLink);
-        alert("ट्रैकिंग लिंक कॉपी हो गया! अब इसे कैंडिडेट या दोस्त को भेजें।");
+    function copyTracking() {
+        navigator.clipboard.writeText(trackUrl);
+        alert("सटीक रूट वाला ट्रैकिंग लिंक कॉपी हो चुका है! इसे कैंडिडेट को WhatsApp पर भेजें।");
     }
 </script>
 
