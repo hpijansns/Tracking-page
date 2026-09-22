@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>सरस्वती बुक पब्लिकेशन - डिस्पैच एडमिन पैनल</title>
+    <title>सरस्वती बुक पब्लिकेशन - लाइव एडमिन पैनल (Firebase)</title>
     <style>
         :root { --primary: #0f2b5c; --accent: #1d4ed8; --bg: #f8fafc; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -11,13 +11,13 @@
         .card { background: white; width: 100%; max-width: 720px; padding: 28px; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
         .head { border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .head h2 { color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
-        .tag { background: #dbeafe; color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .status-badge { background: #dcfce7; color: #15803d; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
         .section-title { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin: 18px 0 10px 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .form-group { margin-bottom: 14px; }
         label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); }
+        input, select { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); }
         .btn-gen { background: #e2e8f0; border: none; padding: 10px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 15px; }
         .btn-submit:hover { background: #0a1f42; }
@@ -31,7 +31,7 @@
 <div class="card">
     <div class="head">
         <h2>📚 सरस्वती बुक पब्लिकेशन</h2>
-        <span class="tag">कूरियर रूट मैनेजर</span>
+        <span class="status-badge">🟢 Firebase Realtime Connected</span>
     </div>
 
     <!-- 1. Origin Information -->
@@ -39,7 +39,7 @@
     <div class="grid-2">
         <div class="form-group">
             <label>ओरिजिन वेयरहाउस का नाम</label>
-            <input type="text" id="origHub" value="Saraswati Regional Press & Warehouse">
+            <input type="text" id="origHub" value="Saraswati Regional Press & Logistics">
         </div>
         <div class="form-group">
             <label>ओरिजिन शहर व राज्य (मैप रूट के लिए)</label>
@@ -80,10 +80,10 @@
     <div class="section-title">3. असाइनमेंट किट व पार्सल विवरण</div>
     <div class="grid-2">
         <div class="form-group">
-            <label>ट्रैकिंग नंबर (AWB)</label>
+            <label>ट्रैकिंग नंबर (AWB Code)</label>
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="trkCode" placeholder="SBP-HW-984120">
-                <button class="btn-gen" onclick="autoCode()">Auto</button>
+                <button class="btn-gen" type="button" id="btnAutoCode">Auto</button>
             </div>
         </div>
         <div class="form-group">
@@ -113,7 +113,7 @@
     <div class="grid-2">
         <div class="form-group">
             <label>पार्सल की वर्तमान स्थिति</label>
-            <select id="shipStep" onchange="autoHubLocation()">
+            <select id="shipStep">
                 <option value="1">1. डिस्पैच हुआ (Ahmedabad Warehouse)</option>
                 <option value="2">2. इन-ट्रांजिट हाईवे हब (National Highway Inter-State)</option>
                 <option value="3">3. गंतव्य शहर के लोकल हब पर (Jaipur Sorting Facility)</option>
@@ -127,23 +127,46 @@
         </div>
     </div>
 
-    <button class="btn-submit" onclick="generateLink()">लाइव रूट ट्रैकिंग लिंक तैयार करें 🚀</button>
+    <button class="btn-submit" type="button" id="btnSave">Firebase डेटाबेस में सेव व अपडेट करें 🚀</button>
 
     <div class="result-box" id="resBox">
-        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ पार्सल का लाइव रूट डेटा सफलतापूर्वक तैयार है!</div>
+        <div style="font-size: 13px; color: #166534; font-weight: bold;">✅ पार्सल का डेटा Firebase में लाइव सेव हो गया!</div>
         <div class="res-code" id="codeDisplay">SBP-HW-000000</div>
-        <button class="btn-copy" onclick="copyTracking()">📋 ट्रैकिंग लिंक कॉपी करें (कैंडिडेट को भेजने के लिए)</button>
+        <button class="btn-copy" type="button" id="btnCopy">📋 ट्रैकिंग लिंक कॉपी करें (कैंडिडेट को भेजने के लिए)</button>
     </div>
 </div>
 
-<script>
+<!-- Firebase Realtime Database Integration -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Your Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQysDZkvCf5m7TZrqck7zxb1EiTpRhFuk",
+      authDomain: "remotescreen-4dc1a.firebaseapp.com",
+      databaseURL: "https://remotescreen-4dc1a-default-rtdb.firebaseio.com",
+      projectId: "remotescreen-4dc1a",
+      storageBucket: "remotescreen-4dc1a.firebasestorage.app",
+      messagingSenderId: "673121898826",
+      appId: "1:673121898826:web:af3f82f486638b61af71b3",
+      measurementId: "G-XN2P1X0LZ7"
+    };
+
+    // Initialize Firebase & Database
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let finalLink = "";
+
     function autoCode() {
         const rand = Math.floor(100000 + Math.random() * 900000);
         document.getElementById('trkCode').value = 'SBP-HW-' + rand;
     }
+    document.getElementById('btnAutoCode').addEventListener('click', autoCode);
     autoCode();
 
-    function autoHubLocation() {
+    document.getElementById('shipStep').addEventListener('change', () => {
         const s = document.getElementById('shipStep').value;
         const hub = document.getElementById('currentHubName');
         if(s === "1") hub.value = "Ahmedabad Central Publishing Warehouse (Dispatch Dock 2)";
@@ -151,49 +174,64 @@
         else if(s === "3") hub.value = "Jaipur RMS Nodal Postal Hub (Near Railway Station)";
         else if(s === "4") hub.value = "Jaipur South Delivery Center (Gopalpura Area Route)";
         else if(s === "5") hub.value = "Delivered at Doorstep Address";
-    }
+    });
 
-    let trackUrl = "";
+    document.getElementById('btnSave').addEventListener('click', async () => {
+        const trk = document.getElementById('trkCode').value.trim();
+        const candName = document.getElementById('candName').value.trim();
+        const candAddress = document.getElementById('candAddress').value.trim();
+        const candCityPin = document.getElementById('candCityPin').value.trim();
 
-    function generateLink() {
+        if(!trk || !candName || !candAddress || !candCityPin) {
+            alert("कृपया नाम, पता, शहर और ट्रैकिंग नंबर अवश्य भरें!");
+            return;
+        }
+
         const payload = {
-            trk: document.getElementById('trkCode').value.trim(),
+            trk: trk,
             candId: document.getElementById('candId').value.trim(),
-            name: document.getElementById('candName').value.trim(),
+            name: candName,
             phone: document.getElementById('candPhone').value.trim(),
-            addr: document.getElementById('candAddress').value.trim(),
+            addr: candAddress,
             lm: document.getElementById('candLandmark').value.trim(),
-            cityPin: document.getElementById('candCityPin').value.trim(),
+            cityPin: candCityPin,
             origHub: document.getElementById('origHub').value.trim(),
             origCity: document.getElementById('origCity').value.trim(),
             proj: document.getElementById('projTitle').value.trim(),
             payout: document.getElementById('payout').value.trim(),
             kit: document.getElementById('kitDesc').value.trim(),
             step: parseInt(document.getElementById('shipStep').value),
-            currHub: document.getElementById('currentHubName').value.trim()
+            currHub: document.getElementById('currentHubName').value.trim(),
+            lastUpdated: new Date().toISOString()
         };
 
-        if(!payload.trk || !payload.name || !payload.addr || !payload.cityPin) {
-            alert("कृपया कैंडिडेट का नाम, पता, शहर और ट्रैकिंग नंबर अवश्य भरें!");
-            return;
+        const saveBtn = document.getElementById('btnSave');
+        saveBtn.innerText = "Firebase में सेव हो रहा है...";
+        saveBtn.disabled = true;
+
+        try {
+            // Save directly to Firebase Realtime Database: shipments/{trk}
+            await set(ref(db, 'shipments/' + trk), payload);
+
+            const curPath = window.location.href;
+            finalLink = curPath.substring(0, curPath.lastIndexOf('/')) + '/track.html?code=' + trk;
+
+            document.getElementById('codeDisplay').innerText = trk;
+            document.getElementById('resBox').style.display = 'block';
+            alert("सफलतापूर्वक Firebase में सेव हो गया!");
+        } catch (error) {
+            console.error("Firebase Error: ", error);
+            alert("Firebase में सेव करने में त्रुटि आई: " + error.message);
+        } finally {
+            saveBtn.innerText = "Firebase डेटाबेस में सेव व अपडेट करें 🚀";
+            saveBtn.disabled = false;
         }
+    });
 
-        // Local storage cache
-        localStorage.setItem("SBP_TRK_" + payload.trk, JSON.stringify(payload));
-
-        // URL encode
-        const encoded = encodeURIComponent(JSON.stringify(payload));
-        const curPath = window.location.href;
-        trackUrl = curPath.substring(0, curPath.lastIndexOf('/')) + '/track.html?pkg=' + encoded;
-
-        document.getElementById('codeDisplay').innerText = payload.trk;
-        document.getElementById('resBox').style.display = 'block';
-    }
-
-    function copyTracking() {
-        navigator.clipboard.writeText(trackUrl);
-        alert("सटीक रूट वाला ट्रैकिंग लिंक कॉपी हो चुका है! इसे कैंडिडेट को WhatsApp पर भेजें।");
-    }
+    document.getElementById('btnCopy').addEventListener('click', () => {
+        navigator.clipboard.writeText(finalLink);
+        alert("रियल-टाइम ट्रैकिंग लिंक कॉपी हो गया!\n\n" + finalLink);
+    });
 </script>
 
 </body>
